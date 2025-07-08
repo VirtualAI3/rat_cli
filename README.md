@@ -1,19 +1,19 @@
 # CyberCLI
 
-CyberCLI es una herramienta de línea de comandos avanzada diseñada para la gestión remota de clientes en entornos de ciberseguridad. Desarrollada para un concurso universitario, combina modularidad, seguridad y facilidad de uso en una potente interfaz CLI.
+CyberCLI es una herramienta avanzada de línea de comandos para la gestión remota de clientes en entornos de ciberseguridad. Desarrollada para un concurso universitario, combina modularidad, seguridad y facilidad de uso en una potente interfaz CLI.
 
-![CyberCLI Demo](https://via.placeholder.com/800x400.png?text=CyberCLI+Interface+Demo)
+![CyberCLI Interface](https://via.placeholder.com/800x400.png?text=CyberCLI+Command+Interface)
 
 ## Características Principales
 
 - 🖥️ **Interfaz CLI interactiva** con autocompletado y sugerencias
-- 🔒 **Comunicaciones seguras** con cifrado TLS (en desarrollo)
 - 📁 **Gestión avanzada de archivos**: transferencia, listado y eliminación
 - 🌐 **Control remoto** de clientes conectados
-- 🛡️ **Firewall management** para configurar reglas de seguridad
+- 🛡️ **Gestión de firewall** para configurar reglas de seguridad
 - 📸 **Captura de pantallas** remota
-- 💬 **Salida mejorada** con estilización Rich para mejor legibilidad
+- 💬 **Salida mejorada** con estilización para mejor legibilidad
 - 🧩 **Diseño modular** para fácil mantenimiento y extensión
+- 📊 **Sistema de logging** completo para auditoría
 
 ## Requisitos
 
@@ -35,7 +35,7 @@ CyberCLI es una herramienta de línea de comandos avanzada diseñada para la ges
    ```bash
    python -m venv venv
    source venv/bin/activate  # Linux/Mac
-   # venv\Scripts\activate  # Windows
+   venv\Scripts\activate    # Windows
    ```
 
 3. Instala dependencias:
@@ -43,12 +43,7 @@ CyberCLI es una herramienta de línea de comandos avanzada diseñada para la ges
    pip install -r requirements.txt
    ```
 
-4. (Opcional) Genera certificados TLS para pruebas:
-   ```bash
-   openssl req -x509 -newkey rsa:2048 -keyout server.key -out server.crt -days 365 -nodes -subj "/CN=localhost"
-   ```
-
-5. Ejecuta la aplicación:
+4. Ejecuta la aplicación:
    ```bash
    python main.py
    ```
@@ -56,11 +51,11 @@ CyberCLI es una herramienta de línea de comandos avanzada diseñada para la ges
 ## Uso Básico
 
 ```plaintext
-c2> start_server  # Inicia el servidor
-c2> list_clients  # Muestra clientes conectados
-c2> execute whoami --client 1  # Ejecuta comando en cliente 1
-c2> help_cmd  # Muestra ayuda
-c2> exit  # Sale del CLI
+c2> start_server        # Inicia el servidor
+c2> list_clients        # Muestra clientes conectados
+c2> get_file --source /ruta/archivo.txt --dest descargas/  # Descarga archivo
+c2> help_cmd            # Muestra ayuda
+c2> exit                # Sale del CLI
 ```
 
 ## Comandos Disponibles
@@ -70,7 +65,7 @@ c2> exit  # Sale del CLI
 | `start_server`           | Inicia el servidor                           | `start_server`                   |
 | `stop_server`            | Detiene el servidor                          | `stop_server`                    |
 | `list_clients`           | Muestra clientes conectados                  | `list_clients`                   |
-| `execute`                | Ejecuta comando remoto                       | `execute whoami --client 1`      |
+| `execute`                | Ejecuta comando/script remoto                | `execute codigo.py --client 1`   |
 | `get_file`               | Descarga archivo desde cliente               | `get_file --source /path/file.txt` |
 | `get_directory`          | Descarga directorio completo                 | `get_directory --source /data`   |
 | `list_directory`         | Lista contenido de directorio remoto         | `list_directory --path /docs`    |
@@ -85,33 +80,83 @@ c2> exit  # Sale del CLI
 
 ```plaintext
 cybercli/
-├── main.py               # Punto de entrada principal
-├── requirements.txt      # Dependencias del proyecto
-├── cli/                  # Módulo de interfaz de línea de comandos
-│   ├── commands.py       # Implementación de comandos
-│   └── interface.py      # Interfaz interactiva
-├── server/               # Componentes del servidor
-│   ├── handlers.py       # Manejadores de solicitudes
-│   └── server.py         # Implementación del servidor
-├── parser/               # Sistema de análisis sintáctico
-│   ├── grammar.lark      # Gramática EBNF
-│   └── command_parser.py # Validador de comandos
-├── utils/                # Utilidades diversas
-│   ├── security.py       # Funciones de seguridad
-│   └── formatters.py     # Formateo de salida
-├── config/               # Configuraciones
-├── data/                 # Archivos generados
-└── tests/                # Pruebas unitarias
+│   .gitignore
+│   LICENSE
+│   main.py               # Punto de entrada principal
+│   README.md             # Este archivo
+│   requirements.txt      # Dependencias
+│   setup.py              # Script de instalación
+│
+├───cli
+│   │   cli_core.py       # Núcleo de la interfaz CLI
+│   │   __init__.py
+│   │
+│   └───commands          # Implementación de comandos
+│           add_firewall_rule.py
+│           capture_screen.py
+│           delete.py
+│           execute.py
+│           exit.py
+│           get_directory.py
+│           get_file.py
+│           get_files_by_extension.py
+│           help_cmd.py
+│           list_clients.py
+│           list_directory.py
+│           send_file.py
+│           start_server.py
+│           stop_server.py
+│           __init__.py
+│
+├───config                # Configuraciones
+│       defaults.json
+│       settings.py
+│       __init__.py
+│
+├───data                  # Almacenamiento
+│   ├───directories       # Directorios descargados
+│   ├───logs              # Registros del sistema
+│   │       cybercli.log
+│   ├───received_files    # Archivos recibidos
+│   └───screenshots       # Capturas de pantalla
+│
+├───parser                # Sistema de análisis
+│       command_parser.py # Validador de comandos
+│       grammar.lark      # Gramática EBNF
+│       suggestion_engine.py # Motor de sugerencias
+│       __init__.py
+│
+├───server                # Componentes del servidor
+│   │   client_manager.py # Gestión de clientes
+│   │   server_core.py    # Núcleo del servidor
+│   │   __init__.py
+│   │
+│   └───handlers          # Manejadores de operaciones
+│           command_handler.py
+│           directory_handler.py
+│           file_handler.py
+│           firewall_handler.py
+│           screenshot_handler.py
+│           __init__.py
+│
+└───utils                 # Utilidades
+        error_handler.py  # Manejo de errores
+        formatter.py      # Formateo de salida
+        logger.py         # Sistema de logging
+        response_waiter.py# Espera de respuestas
+        validator.py      # Validación de datos
+        __init__.py
 ```
 
 ## Contribuciones
 
-¡Las contribuciones son bienvenidas! Por favor:
+¡Las contribuciones son bienvenidas! Sigue estos pasos:
 
-1. Crea un issue describiendo la mejora propuesta
+1. Reporta errores o sugerencias creando un issue
 2. Haz fork del repositorio
-3. Crea una rama con tus cambios (`git checkout -b feature/nueva-funcionalidad`)
-4. Envía un Pull Request detallado
+3. Crea una rama para tu función (`git checkout -b feature/nueva-funcionalidad`)
+4. Realiza tus cambios y prueba exhaustivamente
+5. Envía un Pull Request con una descripción detallada
 
 ## Licencia
 
@@ -119,5 +164,5 @@ Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE)
 
 ---
 
-**CyberCLI** - Herramienta avanzada de gestión remota para operaciones de ciberseguridad  
+**CyberCLI** - Plataforma avanzada de gestión remota para operaciones de ciberseguridad  
 Desarrollado para el Concurso Universitario de Ciberseguridad 2023
