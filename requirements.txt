@@ -1,0 +1,5 @@
+cmd2==2.4.3
+rich==13.7.1
+lark==1.1.9
+colorama==0.4.6
+cryptography==42.0.5

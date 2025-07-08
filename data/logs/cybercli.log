@@ -1,0 +1,32 @@
+2025-06-23 07:59:50,325 - ERROR - Error: Error al iniciar el servidor.
+Traceback (most recent call last):
+  File "D:\UNAP VIII\Seguridad Informatica\pysploit\cli\cli_core.py", line 91, in iniciar_servidor
+    self.servidor.iniciar(host, port)
+TypeError: ServidorSocket.iniciar() takes 1 positional argument but 3 were given
+2025-06-23 08:04:13,446 - ERROR - Error: Error al iniciar el servidor.
+Traceback (most recent call last):
+  File "D:\UNAP VIII\Seguridad Informatica\pysploit\server\security.py", line 22, in wrap_socket
+    context.load_cert_chain(certfile=self.certfile, keyfile=self.keyfile)
+FileNotFoundError: [Errno 2] No such file or directory
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\UNAP VIII\Seguridad Informatica\pysploit\cli\cli_core.py", line 91, in iniciar_servidor
+    self.servidor.iniciar(host, port)
+  File "D:\UNAP VIII\Seguridad Informatica\pysploit\server\server_core.py", line 30, in iniciar
+    self.socket_servidor = Security().wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\UNAP VIII\Seguridad Informatica\pysploit\server\security.py", line 27, in wrap_socket
+    self.generate_self_signed_cert()
+  File "D:\UNAP VIII\Seguridad Informatica\pysploit\server\security.py", line 39, in generate_self_signed_cert
+    subprocess.run([
+  File "C:\Users\HP\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-keyout', 'D:\\UNAP VIII\\Seguridad Informatica\\pysploit\\server.key', '-out', 'D:\\UNAP VIII\\Seguridad Informatica\\pysploit\\server.crt', '-days', '365', '-nodes', '-subj', '/CN=localhost']' returned non-zero exit status 1.
+2025-07-05 19:37:51,785 - ERROR - Error: No se pudo inicializar el servidor.
+Traceback (most recent call last):
+  File "D:\UNAP VIII\Seguridad Informatica\pysploit\cli\cli_core.py", line 71, in __init__
+    self.server_core.establecer_cli_instance(self)
+    ^^^^^^^^^^^^^^^^
+AttributeError: 'CyberCLICore' object has no attribute 'server_core'

@@ -1,0 +1,41 @@
+```gitignore
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Archivos de certificados
+*.crt
+*.key
+
+# Archivos generados
+data/received_files/
+data/directories/
+data/screenshots/
+data/logs/
+
+# Archivos de configuración local
+*.local
+*.env
+
+# Archivos de editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Dependencias instaladas
+site-packages/
+```

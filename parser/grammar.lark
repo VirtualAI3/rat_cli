@@ -1,0 +1,34 @@
+```lark
+// Gramática EBNF para los comandos de CyberCLI
+
+command: start_server | stop_server | list_clients | execute | get_file | get_directory 
+       | list_directory | delete | capture_screen | add_firewall_rule | get_files_by_extension 
+       | send_file | help_cmd | exit
+
+start_server: "start_server" ["--host" IP] ["--port" NUMBER]
+stop_server: "stop_server"
+list_clients: "list_clients"
+execute: "execute" CODE ["--client" CLIENT_SPEC]
+get_file: "get_file" "--source" PATH "--dest" PATH ["--client" CLIENT_SPEC]
+get_directory: "get_directory" "--source" PATH "--dest" PATH ["--client" CLIENT_SPEC]
+list_directory: "list_directory" PATH ["--client" CLIENT_SPEC] ["--files"]
+delete: "delete" PATH ["--client" CLIENT_SPEC]
+capture_screen: "capture_screen" "--dest" PATH ["--name" FILENAME] ["--client" CLIENT_SPEC]
+add_firewall_rule: "add_firewall_rule" "--name" NAME ["--ip" IP] "--port" NUMBER "--action" ("allow" | "block") ["--client" CLIENT_SPEC]
+get_files_by_extension: "get_files_by_extension" "--dir" PATH "--ext" EXTENSION "--dest" PATH ["--client" CLIENT_SPEC]
+send_file: "send_file" "--source" PATH "--dest" PATH ["--client" CLIENT_SPEC]
+help_cmd: "help_cmd" [NAME]
+exit: "exit"
+
+CLIENT_SPEC: NUMBER | "all"
+IP: /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
+NUMBER: /[0-9]+/
+PATH: /[a-zA-Z0-9\/_\-\.]+/
+FILENAME: /[a-zA-Z0-9_\-\.]+/
+EXTENSION: /\.[a-zA-Z0-9]+/
+NAME: /[a-zA-Z0-9_\-\.]+/
+CODE: /.+/
+
+%import common.WS
+%ignore WS
+```
