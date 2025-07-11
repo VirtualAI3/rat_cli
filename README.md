@@ -1,168 +1,104 @@
-# CyberCLI
+Guía de Uso y Buenas Prácticas de CyberCLI
+Orientada a Docentes y Estudiantes en Entornos Educativos de Ciberseguridad
 
-CyberCLI es una herramienta avanzada de línea de comandos para la gestión remota de clientes en entornos de ciberseguridad. Desarrollada para un concurso universitario, combina modularidad, seguridad y facilidad de uso en una potente interfaz CLI.
+🎯 Objetivo de esta Guía
+Brindar a docentes y estudiantes una guía clara y estructurada para la instalación, uso ético y pedagógico de la herramienta CyberCLI, garantizando que su aplicación se limite a entornos controlados con fines educativos y éticos, evitando cualquier uso indebido o malicioso.
 
-![CyberCLI Interface](https://via.placeholder.com/800x400.png?text=CyberCLI+Command+Interface)
+🧠 ¿Qué es CyberCLI?
+CyberCLI es una herramienta de línea de comandos diseñada para simular escenarios de gestión remota en ciberseguridad ofensiva y defensiva. Fue desarrollada con fines académicos para apoyar la formación en prácticas seguras, auditorías, y ejercicios de red teaming/red hardening.
 
-## Características Principales
+⚠️ CyberCLI NO debe utilizarse en redes reales sin consentimiento explícito. Solo está autorizada para entornos controlados, laboratorios o simulaciones académicas.
 
-- 🖥️ **Interfaz CLI interactiva** con autocompletado y sugerencias
-- 📁 **Gestión avanzada de archivos**: transferencia, listado y eliminación
-- 🌐 **Control remoto** de clientes conectados
-- 🛡️ **Gestión de firewall** para configurar reglas de seguridad
-- 📸 **Captura de pantallas** remota
-- 💬 **Salida mejorada** con estilización para mejor legibilidad
-- 🧩 **Diseño modular** para fácil mantenimiento y extensión
-- 📊 **Sistema de logging** completo para auditoría
+🛠 Instalación Segura en Entornos Académicos
+Requisitos Previos:
 
-## Requisitos
+Python 3.8+
 
-- Python 3.8+
-- Dependencias:
-  ```bash
-  pip install -r requirements.txt
-  ```
+Conexión a una red local de laboratorio (sin acceso a sistemas reales)
 
-## Instalación Rápida
+Supervisión docente en todo momento
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/tu_usuario/cybercli.git
-   cd cybercli
-   ```
+Pasos para la Instalación:
 
-2. Configura entorno virtual (recomendado):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate    # Windows
-   ```
+bash
+Copiar
+Editar
+# Clona el repositorio
+git clone https://github.com/tu_usuario/cybercli.git
+cd cybercli
 
-3. Instala dependencias:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Crea un entorno virtual (buena práctica)
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
 
-4. Ejecuta la aplicación:
-   ```bash
-   python main.py
-   ```
+# Instala las dependencias
+pip install -r requirements.txt
 
-## Uso Básico
+# Ejecuta la aplicación
+python main.py
+🔐 Recomendación docente: usar entornos virtualizados (VirtualBox, VMware, etc.) o redes aisladas para asegurar el aislamiento de pruebas.
 
-```plaintext
-c2> start_server        # Inicia el servidor
-c2> list_clients        # Muestra clientes conectados
-c2> get_file --source /ruta/archivo.txt --dest descargas/  # Descarga archivo
-c2> help_cmd            # Muestra ayuda
-c2> exit                # Sale del CLI
-```
+🔒 Buenas Prácticas y Uso Responsable
+Propósito educativo únicamente:
+Utiliza la herramienta solo para ejercicios guiados por docentes o proyectos académicos autorizados.
 
-## Comandos Disponibles
+Consentimiento informado:
+Toda actividad remota debe realizarse con el consentimiento de los participantes. Está prohibido el acceso a dispositivos no controlados.
 
-| Comando                  | Descripción                                  | Ejemplo                          |
-|--------------------------|----------------------------------------------|----------------------------------|
-| `start_server`           | Inicia el servidor                           | `start_server`                   |
-| `stop_server`            | Detiene el servidor                          | `stop_server`                    |
-| `list_clients`           | Muestra clientes conectados                  | `list_clients`                   |
-| `execute`                | Ejecuta comando/script remoto                | `execute codigo.py --client 1`   |
-| `get_file`               | Descarga archivo desde cliente               | `get_file --source /path/file.txt` |
-| `get_directory`          | Descarga directorio completo                 | `get_directory --source /data`   |
-| `list_directory`         | Lista contenido de directorio remoto         | `list_directory --path /docs`    |
-| `delete`                 | Elimina archivo/directorio remoto            | `delete --path /temp/file.log`   |
-| `capture_screen`         | Captura pantalla remota                      | `capture_screen --client 1`      |
-| `add_firewall_rule`      | Agrega regla de firewall                     | `add_firewall_rule --port 80`    |
-| `get_files_by_extension` | Descarga archivos por extensión              | `get_files_by_extension --ext pdf` |
-| `send_file`              | Envía archivo a cliente                      | `send_file --source local.txt`   |
-| `help_cmd`               | Muestra ayuda detallada                      | `help_cmd execute`               |
+Entornos simulados:
+Utiliza máquinas virtuales con sistemas configurados para prácticas de ciberseguridad (e.g. Kali, Metasploitable, OWASP Juice Shop).
 
-## Estructura del Proyecto
+Supervisión constante:
+Toda práctica debe estar supervisada por personal docente o técnicos de laboratorio.
 
-```plaintext
-cybercli/
-│   .gitignore
-│   LICENSE
-│   main.py               # Punto de entrada principal
-│   README.md             # Este archivo
-│   requirements.txt      # Dependencias
-│   setup.py              # Script de instalación
-│
-├───cli
-│   │   cli_core.py       # Núcleo de la interfaz CLI
-│   │   __init__.py
-│   │
-│   └───commands          # Implementación de comandos
-│           add_firewall_rule.py
-│           capture_screen.py
-│           delete.py
-│           execute.py
-│           exit.py
-│           get_directory.py
-│           get_file.py
-│           get_files_by_extension.py
-│           help_cmd.py
-│           list_clients.py
-│           list_directory.py
-│           send_file.py
-│           start_server.py
-│           stop_server.py
-│           __init__.py
-│
-├───config                # Configuraciones
-│       defaults.json
-│       settings.py
-│       __init__.py
-│
-├───data                  # Almacenamiento
-│   ├───directories       # Directorios descargados
-│   ├───logs              # Registros del sistema
-│   │       cybercli.log
-│   ├───received_files    # Archivos recibidos
-│   └───screenshots       # Capturas de pantalla
-│
-├───parser                # Sistema de análisis
-│       command_parser.py # Validador de comandos
-│       grammar.lark      # Gramática EBNF
-│       suggestion_engine.py # Motor de sugerencias
-│       __init__.py
-│
-├───server                # Componentes del servidor
-│   │   client_manager.py # Gestión de clientes
-│   │   server_core.py    # Núcleo del servidor
-│   │   __init__.py
-│   │
-│   └───handlers          # Manejadores de operaciones
-│           command_handler.py
-│           directory_handler.py
-│           file_handler.py
-│           firewall_handler.py
-│           screenshot_handler.py
-│           __init__.py
-│
-└───utils                 # Utilidades
-        error_handler.py  # Manejo de errores
-        formatter.py      # Formateo de salida
-        logger.py         # Sistema de logging
-        response_waiter.py# Espera de respuestas
-        validator.py      # Validación de datos
-        __init__.py
-```
+No producción:
+No está permitido instalar o ejecutar CyberCLI en redes empresariales, educativas en producción o equipos personales ajenos.
 
-## Contribuciones
+Auditoría:
+Utiliza el sistema de logging de CyberCLI para registrar todas las acciones realizadas. Esto facilita evaluaciones y revisiones.
 
-¡Las contribuciones son bienvenidas! Sigue estos pasos:
+Ética profesional:
+Usa CyberCLI para comprender, mejorar y defender sistemas, nunca para comprometerlos sin autorización.
 
-1. Reporta errores o sugerencias creando un issue
-2. Haz fork del repositorio
-3. Crea una rama para tu función (`git checkout -b feature/nueva-funcionalidad`)
-4. Realiza tus cambios y prueba exhaustivamente
-5. Envía un Pull Request con una descripción detallada
+👩‍🏫 Aplicaciones Educativas en Entornos Controlados
+Escenario	Objetivo Educativo	Ejemplo de Comando
+Simulación de red con clientes vulnerables	Enseñar prácticas de hardening	list_clients, add_firewall_rule
+Transferencia de archivos maliciosos simulados	Analizar vectores de entrada	send_file --source malware_sim.py
+Captura de pantalla en auditorías controladas	Práctica de evidencia forense	capture_screen --client 2
+Comprobación de configuraciones remotas	Automatización de auditorías	execute audit_script.py --client 1
 
-## Licencia
+🧪 Recomendación docente: Documenta cada ejercicio con objetivos, pasos, resultados esperados y reflexión ética final.
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+🧭 Ejemplo de Flujo de Clase
+Tema: Práctica de Gestión Remota Segura
+Duración: 2 horas
+Materiales: 3 VMs (1 servidor, 2 clientes), CyberCLI instalado
 
----
+Explicación teórica (30 min): Introducción a gestión remota segura y ética.
 
-**CyberCLI** - Plataforma avanzada de gestión remota para operaciones de ciberseguridad  
-Desarrollado para el Concurso Universitario de Ciberseguridad 2023
+Configuración del entorno (15 min): VMs conectadas por red virtual interna.
+
+Ejecución práctica (1 hora): Uso de comandos start_server, list_clients, send_file, add_firewall_rule.
+
+Reflexión final (15 min): Discusión sobre riesgos y responsabilidades éticas.
+
+🧾 Licencia y Legalidad
+CyberCLI se distribuye bajo la licencia MIT, lo que permite su uso, modificación y distribución con fines académicos. Sin embargo, el mal uso de la herramienta puede ser penado por ley en muchos países bajo legislaciones de delitos informáticos.
+
+👨‍💻 Recomendaciones para Docentes
+Incluir una rúbrica de evaluación ética junto a la técnica.
+
+Fomentar el uso del sistema de logging para análisis forense.
+
+Diseñar prácticas donde el uso de CyberCLI sea parte de un ciclo completo: planeación, ejecución, evaluación y documentación.
+
+📚 Recursos Adicionales
+MITRE ATT&CK Framework
+
+Guía Ética en Ciberseguridad - INCIBE
+
+Licencia MIT explicada
+
+🧩 Conclusión
+CyberCLI representa una potente herramienta para aprender ciberseguridad de forma práctica, segura y ética. Su uso debe estar siempre acompañado de reflexión crítica y supervisión académica para formar profesionales responsables.
