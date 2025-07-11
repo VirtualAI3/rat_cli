@@ -1,104 +1,131 @@
-Guía de Uso y Buenas Prácticas de CyberCLI
-Orientada a Docentes y Estudiantes en Entornos Educativos de Ciberseguridad
+---
 
-🎯 Objetivo de esta Guía
-Brindar a docentes y estudiantes una guía clara y estructurada para la instalación, uso ético y pedagógico de la herramienta CyberCLI, garantizando que su aplicación se limite a entornos controlados con fines educativos y éticos, evitando cualquier uso indebido o malicioso.
+# Guía de Uso y Buenas Prácticas de **RAT CLI**
 
-🧠 ¿Qué es CyberCLI?
-CyberCLI es una herramienta de línea de comandos diseñada para simular escenarios de gestión remota en ciberseguridad ofensiva y defensiva. Fue desarrollada con fines académicos para apoyar la formación en prácticas seguras, auditorías, y ejercicios de red teaming/red hardening.
+**Orientada a Docentes y Estudiantes en Entornos Educativos de Ciberseguridad**
 
-⚠️ CyberCLI NO debe utilizarse en redes reales sin consentimiento explícito. Solo está autorizada para entornos controlados, laboratorios o simulaciones académicas.
+---
 
-🛠 Instalación Segura en Entornos Académicos
-Requisitos Previos:
+## 🎯 Objetivo de esta Guía
 
-Python 3.8+
+Brindar a **docentes y estudiantes** una guía clara y estructurada para la **instalación, uso ético y pedagógico** de la herramienta **RAT CLI**, garantizando que su aplicación se limite a **entornos controlados** con fines **educativos y éticos**, evitando cualquier uso indebido o malicioso.
 
-Conexión a una red local de laboratorio (sin acceso a sistemas reales)
+---
 
-Supervisión docente en todo momento
+## 🧠 ¿Qué es RAT CLI?
 
-Pasos para la Instalación:
+**RAT CLI** (Remote Administration Tool Command-Line Interface) es una herramienta educativa diseñada para simular escenarios de administración remota en contextos de **ciberseguridad ofensiva y defensiva**. Su propósito es didáctico: permitir prácticas controladas en laboratorios, con fines exclusivamente académicos.
 
-bash
-Copiar
-Editar
-# Clona el repositorio
-git clone https://github.com/tu_usuario/cybercli.git
-cd cybercli
+> ⚠️ **RAT CLI no debe ser utilizada en redes reales o dispositivos personales.** Está diseñada para entornos simulados bajo supervisión docente.
 
-# Crea un entorno virtual (buena práctica)
+---
+
+## 🛠 Instalación Segura en Entornos Académicos
+
+**Requisitos Previos:**
+
+* Python 3.8 o superior
+* Red virtual o entorno aislado
+* Supervisión docente
+
+**Pasos de instalación:**
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/tu_usuario/rat-cli.git
+cd rat-cli
+
+# Crear entorno virtual (recomendado)
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 
-# Instala las dependencias
+# Instalar dependencias
 pip install -r requirements.txt
 
-# Ejecuta la aplicación
+# Ejecutar la aplicación
 python main.py
-🔐 Recomendación docente: usar entornos virtualizados (VirtualBox, VMware, etc.) o redes aisladas para asegurar el aislamiento de pruebas.
+```
 
-🔒 Buenas Prácticas y Uso Responsable
-Propósito educativo únicamente:
-Utiliza la herramienta solo para ejercicios guiados por docentes o proyectos académicos autorizados.
+> 🔐 Se recomienda usar máquinas virtuales para ejecutar RAT CLI dentro de un laboratorio aislado o entorno de práctica.
 
-Consentimiento informado:
-Toda actividad remota debe realizarse con el consentimiento de los participantes. Está prohibido el acceso a dispositivos no controlados.
+---
 
-Entornos simulados:
-Utiliza máquinas virtuales con sistemas configurados para prácticas de ciberseguridad (e.g. Kali, Metasploitable, OWASP Juice Shop).
+## 🔒 Buenas Prácticas y Uso Responsable
 
-Supervisión constante:
-Toda práctica debe estar supervisada por personal docente o técnicos de laboratorio.
+1. **Uso exclusivo para formación académica.**
+   Cualquier otro uso está expresamente prohibido.
 
-No producción:
-No está permitido instalar o ejecutar CyberCLI en redes empresariales, educativas en producción o equipos personales ajenos.
+2. **Consentimiento obligatorio.**
+   Todas las máquinas involucradas deben estar controladas por el equipo educativo.
 
-Auditoría:
-Utiliza el sistema de logging de CyberCLI para registrar todas las acciones realizadas. Esto facilita evaluaciones y revisiones.
+3. **Entornos virtuales y simulados.**
+   Nunca ejecutar RAT CLI en redes de producción ni en equipos personales ajenos.
 
-Ética profesional:
-Usa CyberCLI para comprender, mejorar y defender sistemas, nunca para comprometerlos sin autorización.
+4. **Supervisión docente.**
+   Toda práctica debe ser guiada por instructores capacitados.
 
-👩‍🏫 Aplicaciones Educativas en Entornos Controlados
-Escenario	Objetivo Educativo	Ejemplo de Comando
-Simulación de red con clientes vulnerables	Enseñar prácticas de hardening	list_clients, add_firewall_rule
-Transferencia de archivos maliciosos simulados	Analizar vectores de entrada	send_file --source malware_sim.py
-Captura de pantalla en auditorías controladas	Práctica de evidencia forense	capture_screen --client 2
-Comprobación de configuraciones remotas	Automatización de auditorías	execute audit_script.py --client 1
+5. **Registro de actividad.**
+   El sistema de logging incorporado permite revisar todas las acciones ejecutadas.
 
-🧪 Recomendación docente: Documenta cada ejercicio con objetivos, pasos, resultados esperados y reflexión ética final.
+6. **Responsabilidad ética.**
+   El objetivo es formar profesionales en ciberseguridad con integridad y conciencia social.
 
-🧭 Ejemplo de Flujo de Clase
-Tema: Práctica de Gestión Remota Segura
-Duración: 2 horas
-Materiales: 3 VMs (1 servidor, 2 clientes), CyberCLI instalado
+---
 
-Explicación teórica (30 min): Introducción a gestión remota segura y ética.
+## 👩‍🏫 Aplicaciones Educativas en Entornos Controlados
 
-Configuración del entorno (15 min): VMs conectadas por red virtual interna.
+| Escenario                            | Objetivo Educativo                       | Comando de ejemplo                   |
+| ------------------------------------ | ---------------------------------------- | ------------------------------------ |
+| Simulación de red comprometida       | Análisis de comportamiento de RAT        | `list_clients`, `start_server`       |
+| Transferencia de archivos maliciosos | Estudio de vectores de entrada           | `send_file --source malware_sim.py`  |
+| Captura de pantalla remota           | Práctica de adquisición de evidencias    | `capture_screen --client 2`          |
+| Automatización de auditorías         | Ejecución remota de scripts de revisión  | `execute audit_script.py --client 1` |
+| Reglas de firewall simuladas         | Evaluación de protección ante conexiones | `add_firewall_rule --port 22`        |
 
-Ejecución práctica (1 hora): Uso de comandos start_server, list_clients, send_file, add_firewall_rule.
+> 🧪 **Consejo docente:** documenta cada práctica con objetivos, pasos, resultados y reflexiones éticas.
 
-Reflexión final (15 min): Discusión sobre riesgos y responsabilidades éticas.
+---
 
-🧾 Licencia y Legalidad
-CyberCLI se distribuye bajo la licencia MIT, lo que permite su uso, modificación y distribución con fines académicos. Sin embargo, el mal uso de la herramienta puede ser penado por ley en muchos países bajo legislaciones de delitos informáticos.
+## 🧭 Ejemplo de Flujo de Clase
 
-👨‍💻 Recomendaciones para Docentes
-Incluir una rúbrica de evaluación ética junto a la técnica.
+**Tema:** Gestión Remota y Seguridad Ética
+**Duración:** 2 horas
+**Recursos:** 3 máquinas virtuales conectadas (1 servidor, 2 clientes)
 
-Fomentar el uso del sistema de logging para análisis forense.
+1. **Teoría inicial (30 min):** Fundamentos de administración remota segura.
+2. **Preparación del entorno (15 min):** Configuración de las VMs con red interna.
+3. **Práctica técnica (1 hora):** Uso de comandos `start_server`, `get_file`, `list_clients`.
+4. **Discusión final (15 min):** Reflexión sobre ética, riesgos y mitigación.
 
-Diseñar prácticas donde el uso de CyberCLI sea parte de un ciclo completo: planeación, ejecución, evaluación y documentación.
+---
 
-📚 Recursos Adicionales
-MITRE ATT&CK Framework
+## 🧾 Licencia y Consideraciones Legales
 
-Guía Ética en Ciberseguridad - INCIBE
+Este software se distribuye bajo la **Licencia MIT**.
+Sin embargo, **el uso indebido de RAT CLI puede incurrir en responsabilidad legal bajo normativas locales de delitos informáticos**.
 
-Licencia MIT explicada
+---
 
-🧩 Conclusión
-CyberCLI representa una potente herramienta para aprender ciberseguridad de forma práctica, segura y ética. Su uso debe estar siempre acompañado de reflexión crítica y supervisión académica para formar profesionales responsables.
+## 👨‍🏫 Recomendaciones para Docentes
+
+* Complementar con guías de ética profesional y seguridad digital.
+* Evaluar la documentación y el comportamiento responsable del estudiante.
+* Fomentar el uso del logging para análisis post-mortem y forense.
+* Desarrollar proyectos donde el uso de RAT CLI sea parte de un ciclo completo: **planificación → ejecución → evaluación ética y técnica**.
+
+---
+
+## 📚 Recursos Adicionales
+
+* [MITRE ATT\&CK Framework](https://attack.mitre.org/)
+* [Guía de Buenas Prácticas en Ciberseguridad - INCIBE](https://www.incibe.es/)
+* [Licencia MIT Explicada](https://choosealicense.com/licenses/mit/)
+
+---
+
+## ✅ Conclusión
+
+**RAT CLI** ofrece un entorno potente para el aprendizaje técnico de gestión remota, siempre que sea utilizado con **propósito educativo, ética y responsabilidad**. Su potencial pedagógico depende de la forma en que docentes y estudiantes lo apliquen dentro de marcos seguros y supervisados.
+
+---
