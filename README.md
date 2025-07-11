@@ -1,5 +1,3 @@
----
-
 ## Guía de Uso y Buenas Prácticas de **RAT CLI**
 
 **Orientada a Docentes y Estudiantes en Entornos Educativos de Ciberseguridad**
