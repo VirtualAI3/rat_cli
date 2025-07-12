@@ -30,5 +30,5 @@ class CommandHandler:
                 return False
             self.client_manager.servidor.enviar_comando_cliente(cliente_id, mensaje)
         
-        self.console.print(f"[bold green]Comando enviado: ejecutar '{codigo}'[/bold green]")
+        self.console.print(f"[bold green]Código para ejecutar en la maquina/maquinas del cliente/clientes:\n'{codigo}'[/bold green]")
         return True

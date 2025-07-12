@@ -8,7 +8,7 @@ class ResponseWaiter:
         self._timeout = timeout
 
     def _clave(self, cliente_id, accion):
-        return f"{cliente_id}:{accion}"
+        return f"{str(cliente_id)}:{accion}"
 
     def esperar_respuesta(self, cliente_id, accion):
         clave = self._clave(cliente_id, accion)

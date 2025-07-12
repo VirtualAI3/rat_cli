@@ -9,7 +9,8 @@
         "received_files_dir": "data/received_files",
         "directories_dir": "data/directories",
         "screenshots_dir": "data/screenshots",
-        "log_dir": "data/logs"
+        "log_dir": "data/logs",
+        "data_dir": "data"
     },
     "logging": {
         "log_file": "data/logs/cybercli.log",

