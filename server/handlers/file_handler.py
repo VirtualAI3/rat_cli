@@ -148,13 +148,18 @@ class FileHandler:
     def _procesar_archivo_enviado(self, datos_dict, cliente_id):
         """Procesa un archivo enviado por el cliente."""
         nombre_archivo = datos_dict.get("nombre_archivo")
-        ruta_destino = datos_dict.get("ruta_destino", os.path.join(RECEIVED_FILES_DIR, nombre_archivo))
+        ruta_destino_base = datos_dict.get("ruta_destino", RECEIVED_FILES_DIR)
         datos_archivo = datos_dict.get("datos_archivo")
         
-        directorio = os.path.dirname(ruta_destino)
-        os.makedirs(directorio, exist_ok=True)
+        if os.path.splitext(ruta_destino_base)[1]:
+            ruta_destino_base = os.path.dirname(ruta_destino_base)
         
-        with open(ruta_destino, "wb") as f:
+        carpeta_extraccion = os.path.join(ruta_destino_base, f"cliente_{cliente_id.replace('[Cliente ', '').replace(']', '')}")
+        os.makedirs(carpeta_extraccion, exist_ok=True)
+        
+        ruta_extraccion_archivo = os.path.join(carpeta_extraccion, nombre_archivo)
+        
+        with open(ruta_extraccion_archivo, "wb") as f:
             f.write(base64.b64decode(datos_archivo))
         
-        self.console.print(f"\n{cliente_id} [bold green]Archivo recibido y guardado en:[/bold green] {ruta_destino}")
+        self.console.print(f"\n{cliente_id} [bold green]Archivo recibido y guardado en:[/bold green] {ruta_extraccion_archivo}")
