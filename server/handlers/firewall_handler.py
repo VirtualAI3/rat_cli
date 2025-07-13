@@ -28,8 +28,8 @@ class FirewallHandler:
         
         mensaje = {
             "accion": "agregar_regla_firewall",
-            "nombre": nombre,
-            "ip": ip,
+            "nombre_regla": nombre,
+            "ip": ip or 'any',
             "puerto": puerto,
             "accion_firewall": accion
         }
@@ -44,6 +44,19 @@ class FirewallHandler:
                 self.console.print(f"[bold red]Error: Cliente con ID {cliente_id} no existe.[/bold red]")
                 return False
             self.client_manager.servidor.enviar_comando_cliente(cliente_id, mensaje)
-        
-        self.console.print(f"[bold green]Comando enviado: agregar regla '{nombre}'[/bold green]")
         return True
+    
+    def _procesar_regla_firewall_agregada(self, datos_dict, cliente_id):
+        """Procesa una regla de firewall agregada."""
+        nombre_regla = datos_dict.get("nombre_regla")
+        ip = datos_dict.get("ip")
+        puerto = datos_dict.get("puerto")
+        accion_firewall = datos_dict.get("accion_firewall")
+        resultado = datos_dict.get("resultado")
+        
+        self.console.print(f"\n{cliente_id} [bold green]🔥 Regla de Firewall procesada:[/bold green]")
+        self.console.print(f"{cliente_id} Nombre: {nombre_regla}")
+        self.console.print(f"{cliente_id} IP: {ip}")
+        self.console.print(f"{cliente_id} Puerto: {puerto}")
+        self.console.print(f"{cliente_id} Acción: {accion_firewall}")
+        self.console.print(f"{cliente_id} Resultado: {resultado}")

@@ -62,9 +62,10 @@ class AddFirewallRuleCommand(CommandSet):
 
         # Enviar comando
         try:
-            self._cmd.client_manager.enviar_comando_agregar_regla_firewall(
+            console.print(f"[bold green]Comando enviado: agregar regla '{args.name}' (IP: {args.ip or 'any'}, Puerto: {args.port}, Acción: {args.action})[/bold green]")
+            resultado = self._cmd.client_manager.enviar_comando_agregar_regla_firewall(
                 args.name, args.ip, args.port, args.action, cliente_id
             )
-            console.print(f"[bold green]Comando enviado: agregar regla '{args.name}' (IP: {args.ip or 'any'}, Puerto: {args.port}, Acción: {args.action})[/bold green]")
+            
         except Exception as e:
             console.print(f"[bold red]Error al enviar comando: {e}[/bold red]")
