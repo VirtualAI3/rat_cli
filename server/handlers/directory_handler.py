@@ -108,7 +108,10 @@ class DirectoryHandler:
         ruta_origen = datos_dict.get("ruta_origen")
         
         try:
-            ruta_destino_completa = os.path.join(ruta_destino, nombre_directorio)
+            cliente_formateado = f"cliente_{cliente_id.replace('[Cliente ', '').replace(']', '')}"
+            
+            ruta_destino_cliente = os.path.join(ruta_destino, cliente_formateado)
+            ruta_destino_completa = os.path.join(ruta_destino_cliente, nombre_directorio)
             os.makedirs(ruta_destino_completa, exist_ok=True)
             
             with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
