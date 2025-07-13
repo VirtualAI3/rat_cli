@@ -10,6 +10,7 @@ from utils.response_waiter import ResponseWaiter
 from server.handlers.screenshot_handler import ScreenshotHandler
 from server.handlers.directory_handler import DirectoryHandler
 from server.handlers.file_handler import FileHandler
+from server.handlers.command_handler import CommandHandler
 
 class ClientManager:
     """Administra clientes conectados y procesa sus respuestas."""
@@ -24,6 +25,7 @@ class ClientManager:
         self.directory_handler = DirectoryHandler(self)
         self.screenshot_handler = ScreenshotHandler(self)
         self.file_handler = FileHandler(self)
+        self.command_handler = CommandHandler(self)
         
     def esperar_respuesta_accion(self, accion, cliente_id=None):
         """Espera la(s) respuesta(s) de uno o varios clientes para una acción dada."""
@@ -57,9 +59,11 @@ class ClientManager:
                 
             elif accion == "archivo_recibido":
                 self.console.print(f"\n{cliente_id} [bold green]Archivo guardado:[/bold green] {datos_dict.get('ruta_destino')}")
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "archivo_enviado":
                 self.file_handler._procesar_archivo_enviado(datos_dict, cliente_id)
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "error":
                 self.console.print(f"\n{cliente_id} [bold red]Error:[/bold red] {datos_dict.get('mensaje')}")
@@ -147,7 +151,7 @@ class ClientManager:
         """Obtiene el número de clientes conectados."""
         return len(self.servidor.clientes)
 
-    def enviar_comando_solicitar_directorio(self, ruta_origen, ruta_destino, cliente_id=None):
+    def enviar_comando_solicitar_directorio(self, ruta_origen, ruta_destino=None, cliente_id=None):
         """Envía comando para solicitar un directorio desde los clientes."""
         exito_envio = self.directory_handler.enviar_comando_solicitar_directorio(ruta_origen, ruta_destino, cliente_id)
         
@@ -167,13 +171,19 @@ class ClientManager:
         return self.comprobar_respuesta(exito_envio, "eliminacion_exitosa", cliente_id)
         
     def enviar_comando_ejecutar(self, codigo, cliente_id=None):
-        """Envía comando para ejecutar un código en los clientes."""
-        from server.handlers.command_handler import CommandHandler
-        handler = CommandHandler(self)
-        
-        exito_envio = handler.enviar_comando_ejecutar(codigo, cliente_id)
+        """Envía comando para ejecutar un código en los clientes.""" 
+        exito_envio = self.command_handler.enviar_comando_ejecutar(codigo, cliente_id)
         
         return self.comprobar_respuesta(exito_envio, "respuesta_ejecucion", cliente_id)
+    def enviar_comando_enviar_archivo_a_clientes(self, ruta_origen, ruta_destino, cliente_id=None):
+        exito_envio = self.file_handler.enviar_archivo_a_clientes(ruta_origen, ruta_destino, cliente_id)
+        
+        return self.comprobar_respuesta(exito_envio, "archivo_recibido", cliente_id)
+    
+    def enviar_comando_solicitar_archivo(self, ruta_origen, ruta_destino=None, cliente_id=None):
+        exito_envio = self.file_handler.enviar_comando_solicitar_archivo(ruta_origen, ruta_destino, cliente_id=None)
+        
+        return self.comprobar_respuesta(exito_envio, "archivo_enviado", cliente_id)
     
     def comprobar_respuesta(self, exito_envio, accion_esperada, cliente_id=None):
         if not exito_envio:

@@ -19,19 +19,33 @@ class FileHandler:
             self.client_manager.servidor.enviar_comando_cliente(cliente_id, mensaje)
         return True
 
-    def enviar_comando_solicitar_archivo(self, ruta_origen, ruta_destino, cliente_id=None):
-        if not validate_path(ruta_origen) or not validate_path(ruta_destino):
-            self.console.print("[bold red]Error: Rutas de origen o destino no válidas.[/bold red]")
+    def enviar_comando_solicitar_archivo(self, ruta_origen, ruta_destino=None, cliente_id=None):
+        if not validate_path(ruta_origen):
+            self.console.print("[bold red]Error: Ruta de origen no válida.[/bold red]")
             return False
 
-        if os.path.isdir(ruta_destino):
-            ruta_destino = os.path.join(ruta_destino, os.path.basename(ruta_origen))
+        if not ruta_destino:
+            ruta_destino_final = os.path.normpath(RECEIVED_FILES_DIR)
+        else:
+            # Validar ruta_destino
+            if not validate_path(ruta_destino):
+                self.console.print("[bold red]Error: La ruta de destino no es válida.[/bold red]")
+                return False
+            
+            # Determinar si es ruta absoluta o relativa
+            if os.path.isabs(ruta_destino):
+                ruta_destino_final = os.path.normpath(ruta_destino)
+            else:
+                from config.settings import DATA_DIR
+                ruta_destino_final = os.path.normpath(os.path.join(DATA_DIR, ruta_destino))
 
         mensaje = {
             "accion": "enviar_archivo",
             "ruta_origen": ruta_origen,
-            "ruta_destino": ruta_destino
+            "ruta_destino": ruta_destino_final
         }
+        
+        self.console.print(f"[bold green] Archivo solicitado de la ruta {ruta_origen} del o de los clientes[/bold green]")
 
         return self._enviar_mensaje(mensaje, cliente_id)
 

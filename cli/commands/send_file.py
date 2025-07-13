@@ -49,10 +49,6 @@ class SendFileCommand(CommandSet):
         
         # Enviar comando
         try:
-            file_handler = FileHandler(self._cmd.client_manager)
-            if file_handler.enviar_archivo_a_clientes(args.source, args.dest, cliente_id):
-                console.print(f"[bold green]Comando enviado: enviar archivo '{args.source}' hacia '{args.dest}'[/bold green]")
-            else:
-                console.print("[bold red]Error al enviar comando.[/bold red]")
+            resultado = self._cmd.client_manager.enviar_comando_enviar_archivo_a_clientes(args.source, args.dest, cliente_id)
         except Exception as e:
             console.print(f"[bold red]Error al enviar comando: {e}[/bold red]")
