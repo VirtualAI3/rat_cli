@@ -5,24 +5,11 @@ from utils.validator import validate_path, validate_file_exists
 from config.settings import RECEIVED_FILES_DIR
 
 class FileHandler:
-    """Maneja la transferencia de archivos entre servidor y clientes."""
-    
     def __init__(self, client_manager):
         self.client_manager = client_manager
         self.console = get_console()
-    
-    def enviar_comando_solicitar_archivo(self, ruta_origen, ruta_destino, cliente_id=None):
-        """Solicita un archivo desde un cliente."""
-        if not validate_path(ruta_origen) or not validate_path(ruta_destino):
-            self.console.print("[bold red]Error: Rutas de origen o destino no válidas.[/bold red]")
-            return False
-        
-        mensaje = {
-            "accion": "enviar_archivo",
-            "ruta_origen": ruta_origen,
-            "ruta_destino": os.path.join(RECEIVED_FILES_DIR, os.path.basename(ruta_destino))
-        }
-        
+
+    def _enviar_mensaje(self, mensaje, cliente_id=None):
         if cliente_id is None:
             self.client_manager.servidor.enviar_comando_todos(mensaje)
         else:
@@ -30,23 +17,37 @@ class FileHandler:
                 self.console.print(f"[bold red]Error: Cliente con ID {cliente_id} no existe.[/bold red]")
                 return False
             self.client_manager.servidor.enviar_comando_cliente(cliente_id, mensaje)
-        
         return True
-    
+
+    def enviar_comando_solicitar_archivo(self, ruta_origen, ruta_destino, cliente_id=None):
+        if not validate_path(ruta_origen) or not validate_path(ruta_destino):
+            self.console.print("[bold red]Error: Rutas de origen o destino no válidas.[/bold red]")
+            return False
+
+        if os.path.isdir(ruta_destino):
+            ruta_destino = os.path.join(ruta_destino, os.path.basename(ruta_origen))
+
+        mensaje = {
+            "accion": "enviar_archivo",
+            "ruta_origen": ruta_origen,
+            "ruta_destino": ruta_destino
+        }
+
+        return self._enviar_mensaje(mensaje, cliente_id)
+
     def enviar_archivo_a_clientes(self, ruta_origen, ruta_destino, cliente_id=None):
-        """Envía un archivo desde el servidor a los clientes."""
         if not validate_file_exists(ruta_origen):
             self.console.print(f"[bold red]Error: El archivo no existe: {ruta_origen}[/bold red]")
             return False
-        
+
         if not validate_path(ruta_destino):
             self.console.print("[bold red]Error: Ruta de destino no válida.[/bold red]")
             return False
-        
+
         try:
             with open(ruta_origen, "rb") as f:
                 datos_archivo = base64.b64encode(f.read()).decode()
-            
+
             nombre_archivo = os.path.basename(ruta_origen)
             mensaje = {
                 "accion": "recibir_archivo",
@@ -54,17 +55,26 @@ class FileHandler:
                 "ruta_destino": os.path.join(ruta_destino, nombre_archivo),
                 "datos_archivo": datos_archivo
             }
-            
-            if cliente_id is None:
-                self.client_manager.servidor.enviar_comando_todos(mensaje)
-            else:
-                if not self.client_manager.servidor.obtener_cliente_por_id(cliente_id):
-                    self.console.print(f"[bold red]Error: Cliente con ID {cliente_id} no existe.[/bold red]")
-                    return False
-                self.client_manager.servidor.enviar_comando_cliente(cliente_id, mensaje)
-            
-            self.console.print(f"[bold green]Archivo enviado: {ruta_origen}[/bold green]")
-            return True
+
+            if self._enviar_mensaje(mensaje, cliente_id):
+                self.console.print(f"[bold green]Archivo enviado: {ruta_origen}[/bold green]")
+                return True
+
         except Exception as e:
             self.console.print(f"[bold red]Error al enviar archivo: {e}[/bold red]")
-            return False
+
+        return False
+    
+    def _procesar_archivo_enviado(self, datos_dict, cliente_id):
+        """Procesa un archivo enviado por el cliente."""
+        nombre_archivo = datos_dict.get("nombre_archivo")
+        ruta_destino = datos_dict.get("ruta_destino", os.path.join(RECEIVED_FILES_DIR, nombre_archivo))
+        datos_archivo = datos_dict.get("datos_archivo")
+        
+        directorio = os.path.dirname(ruta_destino)
+        os.makedirs(directorio, exist_ok=True)
+        
+        with open(ruta_destino, "wb") as f:
+            f.write(base64.b64decode(datos_archivo))
+        
+        self.console.print(f"\n{cliente_id} [bold green]Archivo recibido y guardado en:[/bold green] {ruta_destino}")

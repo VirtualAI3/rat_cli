@@ -44,7 +44,10 @@ class DeleteCommand(CommandSet):
 
         # Enviar comando
         try:
-            self._cmd.client_manager.enviar_comando_eliminar(args.path, cliente_id)
-            console.print(f"[bold green]Comando enviado: eliminar '{args.path}'[/bold green]")
+            resultado = self._cmd.client_manager.enviar_comando_eliminar(args.path, cliente_id)
+            if resultado:
+                console.print(f"[bold green]✅ Se elimino correctamente {args.path} del cliente.[/bold green]")
+            else:
+                console.print(f"[bold red]❌ Falló la eliminación de {args.path} o el cliente no respondió.[/bold red]")
         except Exception as e:
             console.print(f"[bold red]Error al enviar comando: {e}[/bold red]")

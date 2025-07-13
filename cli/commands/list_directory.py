@@ -43,12 +43,7 @@ class ListDirectoryCommand(CommandSet):
         
         # Enviar comando
         try:
-            console.print(f"[bold green]Comando enviado: listar directorio '{args.path}' {'con archivos' if args.files else 'sin archivos'}[/bold green]")
-
             resultado = self._cmd.client_manager.enviar_comando_listar_directorio(args.path, args.files, cliente_id)
-            if resultado:
-                console.print(resultado)
-            
-            #time.sleep(3.0)
+    
         except Exception as e:
             console.print(f"[bold red]Error al enviar comando: {e}[/bold red]")

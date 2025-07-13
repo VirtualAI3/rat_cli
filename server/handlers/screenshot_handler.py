@@ -2,6 +2,8 @@ import os
 from utils.logger import get_console
 from utils.validator import validate_path
 from config.settings import SCREENSHOTS_DIR, DATA_DIR
+from datetime import datetime
+import base64
 
 class ScreenshotHandler:
     """Maneja la transferencia de capturas de pantalla desde los clientes."""
@@ -48,3 +50,36 @@ class ScreenshotHandler:
         
         self.console.print(f"[bold green]Comando enviado: capturar pantalla hacia '{mensaje['ruta_destino']}'[/bold green]")
         return True
+    
+    def _procesar_captura_enviada(self, datos_dict, cliente_id):
+        """Procesa una captura de pantalla enviada."""
+        nombre_archivo = datos_dict.get("nombre_archivo")
+        
+        timestamp = datetime.now().strftime("__%d_%m_%Y__%H_%M_%S")
+        
+        ip_cliente = cliente_id.split("(")[-1].replace(")", "").replace("]", "").replace(".", "-")
+
+        nombre_base, extension = os.path.splitext(nombre_archivo)
+        
+        nuevo_nombre = f"{nombre_base}{timestamp}__{ip_cliente}{extension}"
+        
+        ruta_carpeta = datos_dict.get("ruta_destino", SCREENSHOTS_DIR)
+        ruta_destino = os.path.join(ruta_carpeta, nuevo_nombre)
+
+        datos_imagen = datos_dict.get("datos_imagen")
+        ancho = datos_dict.get("ancho", 0)
+        alto = datos_dict.get("alto", 0)
+        
+        try:
+            directorio = os.path.dirname(ruta_destino)
+            os.makedirs(directorio, exist_ok=True)
+            
+            with open(ruta_destino, "wb") as f:
+                f.write(base64.b64decode(datos_imagen))
+            
+            self.console.print(f"\n{cliente_id} [bold green]📸 Captura de pantalla guardada:[/bold green]")
+            self.console.print(f"{cliente_id} Archivo: {ruta_destino}")
+            self.console.print(f"{cliente_id} Resolución: {ancho}x{alto} píxeles")
+            self.console.print(f"{cliente_id} Tamaño: {os.path.getsize(ruta_destino)} bytes")
+        except Exception as e:
+            self.console.print(f"\n{cliente_id} [bold red]Error al guardar captura de pantalla:[/bold red] {str(e)}")

