@@ -1,28 +1,30 @@
 # RatCLI
 
-RatCLI es una herramienta avanzada de línea de comandos para la gestión remota de clientes en entornos de ciberseguridad. Desarrollada para un concurso universitario, combina modularidad, seguridad y facilidad de uso en una potente interfaz CLI.
+**RatCLI** (Remote Access Trojan Command Line Interface) es una herramienta de línea de comandos diseñada para el control remoto de múltiples clientes como parte de un proyecto académico orientado a la **evaluación de seguridad informática**. Este software simula las capacidades de un troyano de acceso remoto (RAT) y está destinado exclusivamente para fines educativos, pruebas en entornos controlados y auditorías de ciberseguridad.
+
+> ⚠️ **Aviso Legal:** Este proyecto tiene fines exclusivamente académicos y de investigación. El uso no autorizado en sistemas ajenos sin consentimiento explícito es ilegal y va en contra de la ética profesional en ciberseguridad.
 
 ![RatCLI Interface](https://via.placeholder.com/800x400.png?text=RatCLI+Command+Interface)
 
 ## Características Principales
 
-- 🖥️ **Interfaz CLI interactiva** con autocompletado y sugerencias
-- 📁 **Gestión avanzada de archivos**: transferencia, listado y eliminación
-- 🌐 **Control remoto** de clientes conectados
-- 🛡️ **Gestión de firewall** para configurar reglas de seguridad
-- 📸 **Captura de pantallas** remota
-- 💥 **Simulación de ataques a URLs**
-- 💬 **Salida mejorada** con estilización para mejor legibilidad
-- 🧩 **Diseño modular** para fácil mantenimiento y extensión
-- 📊 **Sistema de logging** completo para auditoría
+- 🖥️ **CLI interactiva** con autocompletado y sugerencias
+- 📁 **Gestión de archivos remota**: transferencias, listados, eliminaciones
+- 🌐 **Ejecución de comandos en clientes remotos**
+- 🛡️ **Manejo de reglas de firewall simuladas**
+- 📸 **Captura remota de pantallas**
+- 💥 **Simulación de ataques HTTP a URLs**
+- 💬 **Salida estilizada y coloreada para mejor legibilidad**
+- 🧩 **Arquitectura modular**, fácilmente extensible
+- 📊 **Sistema completo de logging** para seguimiento de operaciones
 
 ## Requisitos
 
-- Python 3.8+
-- Dependencias:
+- Python 3.8 o superior
+- Instalar dependencias con:
   ```bash
   pip install -r requirements.txt
-````
+  ```
 
 ## Instalación Rápida
 
@@ -33,7 +35,7 @@ RatCLI es una herramienta avanzada de línea de comandos para la gestión remota
    cd ratcli
    ```
 
-2. Configura entorno virtual (recomendado):
+2. Crea y activa un entorno virtual (opcional pero recomendado):
 
    ```bash
    python -m venv venv
@@ -41,7 +43,7 @@ RatCLI es una herramienta avanzada de línea de comandos para la gestión remota
    venv\Scripts\activate     # Windows
    ```
 
-3. Instala dependencias:
+3. Instala las dependencias:
 
    ```bash
    pip install -r requirements.txt
@@ -56,31 +58,32 @@ RatCLI es una herramienta avanzada de línea de comandos para la gestión remota
 ## Uso Básico
 
 ```plaintext
-ratcli> start_server         # Inicia el servidor
-ratcli> list_clients         # Muestra clientes conectados
-ratcli> get_file --source /ruta/archivo.txt --dest descargas/  # Descarga archivo
-ratcli> help_cmd             # Muestra ayuda
-ratcli> exit                 # Sale del CLI
+ratcli> start_server                            # Inicia el servidor C2
+ratcli> list_clients                            # Lista clientes conectados
+ratcli> get_file --source /ruta/archivo --dest local/  # Descarga archivo
+ratcli> execute script.py --client 1           # Ejecuta script en un cliente
+ratcli> help_cmd                                # Muestra ayuda
+ratcli> exit                                    # Finaliza la CLI
 ```
 
 ## Comandos Disponibles
 
-| Comando                  | Descripción                                         | Ejemplo                                                      |
-| ------------------------ | --------------------------------------------------- | ------------------------------------------------------------ |
-| `start_server`           | Inicia el servidor                                  | `start_server`                                               |
-| `stop_server`            | Detiene el servidor                                 | `stop_server`                                                |
-| `list_clients`           | Muestra clientes conectados                         | `list_clients`                                               |
-| `execute`                | Ejecuta comando/script remoto                       | `execute codigo.py --client 1`                               |
-| `get_file`               | Descarga archivo desde cliente                      | `get_file --source /path/file.txt`                           |
-| `get_directory`          | Descarga directorio completo                        | `get_directory --source /data`                               |
-| `list_directory`         | Lista contenido de directorio remoto                | `list_directory --path /docs`                                |
-| `delete`                 | Elimina archivo/directorio remoto                   | `delete --path /temp/file.log`                               |
-| `capture_screen`         | Captura pantalla remota                             | `capture_screen --client 1`                                  |
-| `add_firewall_rule`      | Agrega regla de firewall                            | `add_firewall_rule --port 80`                                |
-| `get_files_by_extension` | Descarga archivos por extensión                     | `get_files_by_extension --ext pdf`                           |
-| `send_file`              | Envía archivo a cliente                             | `send_file --source local.txt`                               |
-| `attack_url`             | Simula un ataque a una URL en uno o varios clientes | `attack_url --url http://example.com --tiempo 10 --client 1` |
-| `help_cmd`               | Muestra ayuda detallada                             | `help_cmd execute`                                           |
+| Comando                  | Descripción                                     | Ejemplo                                                     |
+| ------------------------ | ----------------------------------------------- | ----------------------------------------------------------- |
+| `start_server`           | Inicia el servidor de control remoto            | `start_server`                                              |
+| `stop_server`            | Detiene el servidor                             | `stop_server`                                               |
+| `list_clients`           | Lista clientes conectados                       | `list_clients`                                              |
+| `execute`                | Ejecuta comandos o scripts en el cliente remoto | `execute script.py --client 1`                              |
+| `get_file`               | Descarga un archivo desde un cliente            | `get_file --source /etc/passwd --dest local/`               |
+| `get_directory`          | Descarga un directorio completo                 | `get_directory --source /var/log/`                          |
+| `list_directory`         | Lista los contenidos de un directorio remoto    | `list_directory --path /home/user`                          |
+| `delete`                 | Elimina archivos o carpetas en el cliente       | `delete --path /tmp/test.txt`                               |
+| `capture_screen`         | Captura la pantalla del cliente                 | `capture_screen --client 1`                                 |
+| `add_firewall_rule`      | Simula la adición de una regla de firewall      | `add_firewall_rule --port 443`                              |
+| `get_files_by_extension` | Descarga archivos por extensión                 | `get_files_by_extension --ext pdf`                          |
+| `send_file`              | Envía archivos al cliente                       | `send_file --source payload.py`                             |
+| `attack_url`             | Simula un ataque HTTP a una URL                 | `attack_url --url http://target.com --tiempo 10 --client 1` |
+| `help_cmd`               | Muestra ayuda sobre un comando                  | `help_cmd get_file`                                         |
 
 ## Estructura del Proyecto
 
@@ -94,60 +97,58 @@ ratcli/
 │   setup.py                # Script de instalación
 │
 ├───cli
-│   │   cli_core.py         # Núcleo de la interfaz CLI
+│   │   cli_core.py
 │   │   __init__.py
-│   │
-│   └───commands            # Implementación de comandos
-│           add_firewall_rule.py
-│           attack_url.py
-│           capture_screen.py
-│           delete.py
-│           execute.py
-│           exit.py
-│           get_directory.py
-│           get_file.py
-│           get_files_by_extension.py
-│           help_cmd.py
-│           list_clients.py
-│           list_directory.py
-│           send_file.py
-│           start_server.py
-│           stop_server.py
-│           __init__.py
+│   └───commands
+│       │   add_firewall_rule.py
+│       │   attack_url.py
+│       │   capture_screen.py
+│       │   delete.py
+│       │   execute.py
+│       │   exit.py
+│       │   get_directory.py
+│       │   get_file.py
+│       │   get_files_by_extension.py
+│       │   help_cmd.py
+│       │   list_clients.py
+│       │   list_directory.py
+│       │   send_file.py
+│       │   start_server.py
+│       │   stop_server.py
+│       └─── __init__.py
 │
-├───config                  # Configuraciones
+├───config
 │       defaults.json
 │       settings.py
 │       __init__.py
 │
-├───data                    # Almacenamiento
-│   ├───directories         # Directorios descargados
-│   ├───logs                # Registros del sistema
+├───data
+│   ├───directories
+│   ├───logs
 │   │       cybercli.log
-│   ├───received_files      # Archivos recibidos
-│   └───screenshots         # Capturas de pantalla
+│   ├───received_files
+│   └───screenshots
 │
-├───parser                  # Sistema de análisis
-│       command_parser.py   # Validador de comandos
-│       grammar.lark        # Gramática EBNF
-│       suggestion_engine.py# Motor de sugerencias
+├───parser
+│       command_parser.py
+│       grammar.lark
+│       suggestion_engine.py
 │       __init__.py
 │
-├───server                  # Componentes del servidor
-│   │   client_manager.py   # Gestión de clientes
-│   │   server_core.py      # Núcleo del servidor
+├───server
+│   │   client_manager.py
+│   │   server_core.py
 │   │   __init__.py
-│   │
-│   └───handlers            # Manejadores de operaciones
-│           attack_url_handler.py
-│           command_handler.py
-│           directory_handler.py
-│           file_handler.py
-│           firewall_handler.py
-│           screenshot_handler.py
-│           __init__.py
+│   └───handlers
+│       │   attack_url_handler.py
+│       │   command_handler.py
+│       │   directory_handler.py
+│       │   file_handler.py
+│       │   firewall_handler.py
+│       │   screenshot_handler.py
+│       └─── __init__.py
 │
-└───utils                   # Utilidades
+└───utils
     │   client_utils.py
     │   error_handler.py
     │   formatter.py
@@ -155,21 +156,25 @@ ratcli/
     │   response_waiter.py
     │   validator.py
     │   __init__.py
-    │
     └───payloads
             hola_mundo.py
 ```
 
 ## Contribuciones
 
-¡Las contribuciones son bienvenidas! Sigue estos pasos:
+Las contribuciones al proyecto son bienvenidas. Si deseas colaborar:
 
-1. Reporta errores o sugerencias creando un issue
-2. Haz fork del repositorio
-3. Crea una rama para tu función (`git checkout -b feature/nueva-funcionalidad`)
-4. Realiza tus cambios y prueba exhaustivamente
-5. Envía un Pull Request con una descripción detallada
+1. Crea un *issue* para discutir cambios o sugerencias
+2. Haz un fork del repositorio
+3. Crea una nueva rama (`feature/nueva-funcionalidad`)
+4. Realiza y prueba tus cambios
+5. Envía un Pull Request explicando tus modificaciones
 
 ## Licencia
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está licenciado bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+**RatCLI** – Herramienta de investigación y evaluación en ciberseguridad
+Desarrollado como proyecto académico universitario
