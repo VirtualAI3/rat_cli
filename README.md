@@ -31,7 +31,7 @@
 1. Clona el repositorio:
 
    ```bash
-   git clone https://github.com/tu_usuario/ratcli.git
+   https://github.com/VirtualAI3/rat_cli.git
    cd ratcli
    ```
 
@@ -58,23 +58,22 @@
 ## Uso Básico
 
 ```plaintext
-ratcli> start_server                            # Inicia el servidor C2
-ratcli> list_clients                            # Lista clientes conectados
-ratcli> get_file --source /ruta/archivo --dest local/  # Descarga archivo
-ratcli> execute script.py --client 1           # Ejecuta script en un cliente
-ratcli> help_cmd                                # Muestra ayuda
-ratcli> exit                                    # Finaliza la CLI
+c2> start_server --host 0.0.0.0 --port 5555     # Inicia el servidor C2
+c2> list_clients                                # Lista clientes conectados
+c2> execute script.py --client 1                # Ejecuta script en un cliente
+c2> help_cmd                                    # Muestra ayuda
+c2> exit                                        # Finaliza la CLI y para el servidor
 ```
 
 ## Comandos Disponibles
 
 | Comando                  | Descripción                                     | Ejemplo                                                     |
 | ------------------------ | ----------------------------------------------- | ----------------------------------------------------------- |
-| `start_server`           | Inicia el servidor de control remoto            | `start_server`                                              |
+| `start_server`           | Inicia el servidor de control remoto            | `start_server --host 0.0.0.0 --port 5555`                                              |
 | `stop_server`            | Detiene el servidor                             | `stop_server`                                               |
 | `list_clients`           | Lista clientes conectados                       | `list_clients`                                              |
 | `execute`                | Ejecuta comandos o scripts en el cliente remoto | `execute script.py --client 1`                              |
-| `get_file`               | Descarga un archivo desde un cliente            | `get_file --source /etc/passwd --dest local/`               |
+| `get_file`               | Descarga un archivo desde un cliente            | `get_file --source C:/Users/Documento.docx`               |
 | `get_directory`          | Descarga un directorio completo                 | `get_directory --source /var/log/`                          |
 | `list_directory`         | Lista los contenidos de un directorio remoto    | `list_directory --path /home/user`                          |
 | `delete`                 | Elimina archivos o carpetas en el cliente       | `delete --path /tmp/test.txt`                               |
@@ -176,5 +175,4 @@ Este proyecto está licenciado bajo la licencia MIT. Consulta el archivo [LICENS
 
 ---
 
-**RatCLI** – Herramienta de investigación y evaluación en ciberseguridad
-Desarrollado como proyecto académico universitario
+**RatCLI** – Herramienta de investigación y evaluación en ciberseguridad Desarrollado como proyecto académico universitario para el **CONCURSO PROYECTOS ESTUDIANTILES 2025 - I**

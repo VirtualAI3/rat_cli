@@ -73,7 +73,7 @@ class ServidorSocket:
                     break
             except Exception as e:
                 if self.ejecutando:
-                    self.console.print(f"[bold red][!] Error al aceptar conexión: {e}[/bold red]")
+                    self._print_with_prompt_refresh(f"[!] Error al aceptar conexión: {e}")
     
     def manejar_cliente(self, cliente):
         """Maneja la comunicación con un cliente."""
@@ -87,10 +87,10 @@ class ServidorSocket:
                     self.client_manager.procesar_respuesta_cliente(datos, cliente)
                 cliente["ultimo_contacto"] = time.time()
         except ConnectionResetError:
-            self.console.print(f"[bold yellow][!] Conexión cerrada por cliente {cliente['direccion'][0]}:{cliente['direccion'][1]} (ID {cliente['id']})[/bold yellow]")
+            self._print_with_prompt_refresh(f"[!] Conexión cerrada por cliente {cliente['direccion'][0]}:{cliente['direccion'][1]} (ID {cliente['id']})")
         except Exception as e:
             if self.ejecutando:
-                self.console.print(f"[bold red][!] Error al manejar cliente {cliente['direccion'][0]} (ID {cliente['id']}): {e}[/bold red]")
+                self._print_with_prompt_refresh(f"[!] Error al manejar cliente {cliente['direccion'][0]} (ID {cliente['id']}): {e}")
         finally:
             self.remover_cliente(cliente)
     
@@ -103,7 +103,7 @@ class ServidorSocket:
             except:
                 pass
             if self.ejecutando:
-                self.console.print(f"[bold yellow][-] Cliente ID {cliente['id']} ({cliente['direccion'][0]}:{cliente['direccion'][1]}) desconectado[/bold yellow]")
+                self._print_with_prompt_refresh(f"[-] Cliente ID {cliente['id']} ({cliente['direccion'][0]}:{cliente['direccion'][1]}) desconectado")
     
     def enviar_mensaje(self, cliente_socket, mensaje):
         """Envía un mensaje a un cliente."""
@@ -115,7 +115,7 @@ class ServidorSocket:
             cliente_socket.send(mensaje.encode())
             return True
         except Exception as e:
-            self.console.print(f"[bold red][!] Error al enviar mensaje: {e}[/bold red]")
+            self._print_with_prompt_refresh(f"[!] Error al enviar mensaje: {e}")
             return False
     
     def recibir_mensaje(self, cliente_socket):
@@ -136,7 +136,7 @@ class ServidorSocket:
             return b''.join(chunks).decode()
         except Exception as e:
             if self.ejecutando:
-                self.console.print(f"[bold red][!] Error al recibir mensaje: {e}[/bold red]")
+                self._print_with_prompt_refresh(f"[!] Error al recibir mensaje: {e}")
             return None
     
     def enviar_comando_todos(self, comando):
@@ -165,7 +165,7 @@ class ServidorSocket:
                 self.remover_cliente(cliente)
                 return False
         else:
-            self.console.print(f"[bold red][!] Error: Cliente con ID {cliente_id} no encontrado.[/bold red]")
+            self._print_with_prompt_refresh(f"[!] Error: Cliente con ID {cliente_id} no encontrado.")
             return False
     
     def obtener_cliente_por_id(self, cliente_id):
