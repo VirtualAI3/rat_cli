@@ -82,7 +82,7 @@ class ClientManager:
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "captura_enviada":
-                self.screenshot_handler._procesar_captura_enviadarocesar_captura_enviada(datos_dict, cliente_id)
+                self.screenshot_handler._procesar_captura_enviada(datos_dict, cliente_id)
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
             elif accion == "regla_firewall_agregada":
