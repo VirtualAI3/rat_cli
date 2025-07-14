@@ -1,7 +1,6 @@
 from cmd2 import CommandSet, with_default_category, Cmd2ArgumentParser, with_argparser
 from utils.logger import get_console
 from utils.validator import validate_path, validate_client_spec
-from server.handlers.directory_handler import DirectoryHandler
 
 @with_default_category("Comandos de Transferencia")
 class GetDirectoryCommand(CommandSet):

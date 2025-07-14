@@ -1,129 +1,175 @@
-## Guía de Uso y Buenas Prácticas de **RAT CLI**
+# RatCLI
 
-**Orientada a Docentes y Estudiantes en Entornos Educativos de Ciberseguridad**
+RatCLI es una herramienta avanzada de línea de comandos para la gestión remota de clientes en entornos de ciberseguridad. Desarrollada para un concurso universitario, combina modularidad, seguridad y facilidad de uso en una potente interfaz CLI.
 
----
+![RatCLI Interface](https://via.placeholder.com/800x400.png?text=RatCLI+Command+Interface)
 
-## 🎯 Objetivo de esta Guía
+## Características Principales
 
-Brindar a **docentes y estudiantes** una guía clara y estructurada para la **instalación, uso ético y pedagógico** de la herramienta **RAT CLI**, garantizando que su aplicación se limite a **entornos controlados** con fines **educativos y éticos**, evitando cualquier uso indebido o malicioso.
+- 🖥️ **Interfaz CLI interactiva** con autocompletado y sugerencias
+- 📁 **Gestión avanzada de archivos**: transferencia, listado y eliminación
+- 🌐 **Control remoto** de clientes conectados
+- 🛡️ **Gestión de firewall** para configurar reglas de seguridad
+- 📸 **Captura de pantallas** remota
+- 💥 **Simulación de ataques a URLs**
+- 💬 **Salida mejorada** con estilización para mejor legibilidad
+- 🧩 **Diseño modular** para fácil mantenimiento y extensión
+- 📊 **Sistema de logging** completo para auditoría
 
----
+## Requisitos
 
-## 🧠 ¿Qué es RAT CLI?
+- Python 3.8+
+- Dependencias:
+  ```bash
+  pip install -r requirements.txt
+````
 
-**RAT CLI** (Remote Administration Tool Command-Line Interface) es una herramienta educativa diseñada para simular escenarios de administración remota en contextos de **ciberseguridad ofensiva y defensiva**. Su propósito es didáctico: permitir prácticas controladas en laboratorios, con fines exclusivamente académicos.
+## Instalación Rápida
 
-> ⚠️ **RAT CLI no debe ser utilizada en redes reales o dispositivos personales.** Está diseñada para entornos simulados bajo supervisión docente.
+1. Clona el repositorio:
 
----
+   ```bash
+   git clone https://github.com/tu_usuario/ratcli.git
+   cd ratcli
+   ```
 
-## 🛠 Instalación Segura en Entornos Académicos
+2. Configura entorno virtual (recomendado):
 
-**Requisitos Previos:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate     # Windows
+   ```
 
-* Python 3.8 o superior
-* Red virtual o entorno aislado
-* Supervisión docente
+3. Instala dependencias:
 
-**Pasos de instalación:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/tu_usuario/rat-cli.git
-cd rat-cli
+4. Ejecuta la aplicación:
 
-# Crear entorno virtual (recomendado)
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+   ```bash
+   python main.py
+   ```
 
-# Instalar dependencias
-pip install -r requirements.txt
+## Uso Básico
 
-# Ejecutar la aplicación
-python main.py
+```plaintext
+ratcli> start_server         # Inicia el servidor
+ratcli> list_clients         # Muestra clientes conectados
+ratcli> get_file --source /ruta/archivo.txt --dest descargas/  # Descarga archivo
+ratcli> help_cmd             # Muestra ayuda
+ratcli> exit                 # Sale del CLI
 ```
 
-> 🔐 Se recomienda usar máquinas virtuales para ejecutar RAT CLI dentro de un laboratorio aislado o entorno de práctica.
+## Comandos Disponibles
 
----
+| Comando                  | Descripción                                         | Ejemplo                                                      |
+| ------------------------ | --------------------------------------------------- | ------------------------------------------------------------ |
+| `start_server`           | Inicia el servidor                                  | `start_server`                                               |
+| `stop_server`            | Detiene el servidor                                 | `stop_server`                                                |
+| `list_clients`           | Muestra clientes conectados                         | `list_clients`                                               |
+| `execute`                | Ejecuta comando/script remoto                       | `execute codigo.py --client 1`                               |
+| `get_file`               | Descarga archivo desde cliente                      | `get_file --source /path/file.txt`                           |
+| `get_directory`          | Descarga directorio completo                        | `get_directory --source /data`                               |
+| `list_directory`         | Lista contenido de directorio remoto                | `list_directory --path /docs`                                |
+| `delete`                 | Elimina archivo/directorio remoto                   | `delete --path /temp/file.log`                               |
+| `capture_screen`         | Captura pantalla remota                             | `capture_screen --client 1`                                  |
+| `add_firewall_rule`      | Agrega regla de firewall                            | `add_firewall_rule --port 80`                                |
+| `get_files_by_extension` | Descarga archivos por extensión                     | `get_files_by_extension --ext pdf`                           |
+| `send_file`              | Envía archivo a cliente                             | `send_file --source local.txt`                               |
+| `attack_url`             | Simula un ataque a una URL en uno o varios clientes | `attack_url --url http://example.com --tiempo 10 --client 1` |
+| `help_cmd`               | Muestra ayuda detallada                             | `help_cmd execute`                                           |
 
-## 🔒 Buenas Prácticas y Uso Responsable
+## Estructura del Proyecto
 
-1. **Uso exclusivo para formación académica.**
-   Cualquier otro uso está expresamente prohibido.
+```plaintext
+ratcli/
+│   .gitignore
+│   LICENSE
+│   main.py                 # Punto de entrada principal
+│   README.md               # Este archivo
+│   requirements.txt        # Dependencias
+│   setup.py                # Script de instalación
+│
+├───cli
+│   │   cli_core.py         # Núcleo de la interfaz CLI
+│   │   __init__.py
+│   │
+│   └───commands            # Implementación de comandos
+│           add_firewall_rule.py
+│           attack_url.py
+│           capture_screen.py
+│           delete.py
+│           execute.py
+│           exit.py
+│           get_directory.py
+│           get_file.py
+│           get_files_by_extension.py
+│           help_cmd.py
+│           list_clients.py
+│           list_directory.py
+│           send_file.py
+│           start_server.py
+│           stop_server.py
+│           __init__.py
+│
+├───config                  # Configuraciones
+│       defaults.json
+│       settings.py
+│       __init__.py
+│
+├───data                    # Almacenamiento
+│   ├───directories         # Directorios descargados
+│   ├───logs                # Registros del sistema
+│   │       cybercli.log
+│   ├───received_files      # Archivos recibidos
+│   └───screenshots         # Capturas de pantalla
+│
+├───parser                  # Sistema de análisis
+│       command_parser.py   # Validador de comandos
+│       grammar.lark        # Gramática EBNF
+│       suggestion_engine.py# Motor de sugerencias
+│       __init__.py
+│
+├───server                  # Componentes del servidor
+│   │   client_manager.py   # Gestión de clientes
+│   │   server_core.py      # Núcleo del servidor
+│   │   __init__.py
+│   │
+│   └───handlers            # Manejadores de operaciones
+│           attack_url_handler.py
+│           command_handler.py
+│           directory_handler.py
+│           file_handler.py
+│           firewall_handler.py
+│           screenshot_handler.py
+│           __init__.py
+│
+└───utils                   # Utilidades
+    │   client_utils.py
+    │   error_handler.py
+    │   formatter.py
+    │   logger.py
+    │   response_waiter.py
+    │   validator.py
+    │   __init__.py
+    │
+    └───payloads
+            hola_mundo.py
+```
 
-2. **Consentimiento obligatorio.**
-   Todas las máquinas involucradas deben estar controladas por el equipo educativo.
+## Contribuciones
 
-3. **Entornos virtuales y simulados.**
-   Nunca ejecutar RAT CLI en redes de producción ni en equipos personales ajenos.
+¡Las contribuciones son bienvenidas! Sigue estos pasos:
 
-4. **Supervisión docente.**
-   Toda práctica debe ser guiada por instructores capacitados.
+1. Reporta errores o sugerencias creando un issue
+2. Haz fork del repositorio
+3. Crea una rama para tu función (`git checkout -b feature/nueva-funcionalidad`)
+4. Realiza tus cambios y prueba exhaustivamente
+5. Envía un Pull Request con una descripción detallada
 
-5. **Registro de actividad.**
-   El sistema de logging incorporado permite revisar todas las acciones ejecutadas.
+## Licencia
 
-6. **Responsabilidad ética.**
-   El objetivo es formar profesionales en ciberseguridad con integridad y conciencia social.
-
----
-
-## 👩‍🏫 Aplicaciones Educativas en Entornos Controlados
-
-| Escenario                            | Objetivo Educativo                       | Comando de ejemplo                   |
-| ------------------------------------ | ---------------------------------------- | ------------------------------------ |
-| Simulación de red comprometida       | Análisis de comportamiento de RAT        | `list_clients`, `start_server`       |
-| Transferencia de archivos maliciosos | Estudio de vectores de entrada           | `send_file --source malware_sim.py`  |
-| Captura de pantalla remota           | Práctica de adquisición de evidencias    | `capture_screen --client 2`          |
-| Automatización de auditorías         | Ejecución remota de scripts de revisión  | `execute audit_script.py --client 1` |
-| Reglas de firewall simuladas         | Evaluación de protección ante conexiones | `add_firewall_rule --port 22`        |
-
-> 🧪 **Consejo docente:** documenta cada práctica con objetivos, pasos, resultados y reflexiones éticas.
-
----
-
-## 🧭 Ejemplo de Flujo de Clase
-
-**Tema:** Gestión Remota y Seguridad Ética
-**Duración:** 2 horas
-**Recursos:** 3 máquinas virtuales conectadas (1 servidor, 2 clientes)
-
-1. **Teoría inicial (30 min):** Fundamentos de administración remota segura.
-2. **Preparación del entorno (15 min):** Configuración de las VMs con red interna.
-3. **Práctica técnica (1 hora):** Uso de comandos `start_server`, `get_file`, `list_clients`.
-4. **Discusión final (15 min):** Reflexión sobre ética, riesgos y mitigación.
-
----
-
-## 🧾 Licencia y Consideraciones Legales
-
-Este software se distribuye bajo la **Licencia MIT**.
-Sin embargo, **el uso indebido de RAT CLI puede incurrir en responsabilidad legal bajo normativas locales de delitos informáticos**.
-
----
-
-## 👨‍🏫 Recomendaciones para Docentes
-
-* Complementar con guías de ética profesional y seguridad digital.
-* Evaluar la documentación y el comportamiento responsable del estudiante.
-* Fomentar el uso del logging para análisis post-mortem y forense.
-* Desarrollar proyectos donde el uso de RAT CLI sea parte de un ciclo completo: **planificación → ejecución → evaluación ética y técnica**.
-
----
-
-## 📚 Recursos Adicionales
-
-* [MITRE ATT\&CK Framework](https://attack.mitre.org/)
-* [Guía de Buenas Prácticas en Ciberseguridad - INCIBE](https://www.incibe.es/)
-* [Licencia MIT Explicada](https://choosealicense.com/licenses/mit/)
-
----
-
-## ✅ Conclusión
-
-**RAT CLI** ofrece un entorno potente para el aprendizaje técnico de gestión remota, siempre que sea utilizado con **propósito educativo, ética y responsabilidad**. Su potencial pedagógico depende de la forma en que docentes y estudiantes lo apliquen dentro de marcos seguros y supervisados.
-
----
+Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.

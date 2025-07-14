@@ -21,6 +21,8 @@ from cli.commands.add_firewall_rule import AddFirewallRuleCommand
 from cli.commands.get_files_by_extension import GetFilesByExtensionCommand
 from cli.commands.help_cmd import HelpCmdCommand
 from cli.commands.exit import ExitCommand
+from cli.commands.attack_url import AttackURLCommand
+
 import sys
 from rich.text import Text
 
@@ -44,7 +46,8 @@ class CyberCLICore(Cmd):
             AddFirewallRuleCommand(),
             GetFilesByExtensionCommand(),
             HelpCmdCommand(), # Ensure HelpCmdCommand is included here and INSTANTIATED
-            ExitCommand()
+            ExitCommand(),
+            AttackURLCommand()
         ]
 
         super().__init__(command_sets=command_set_instances) 

